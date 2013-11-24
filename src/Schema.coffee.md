@@ -5,14 +5,15 @@ Schema
 	class Schema
 
 Schema#constructor( collection, schemaModel )
--------------------------------------
+---------------------------------------------
+
 Create a new Schema and set it as `collection`.schema
 
 		constructor: (@collection, @schemaModel) ->
 
 
 Schema#insert( schemaModel, [callback] )
---------------------------------------
+----------------------------------------
 
 Extend the actual schema model or create a new one.
 

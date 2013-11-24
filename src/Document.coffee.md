@@ -2,10 +2,11 @@
 Document
 ========
 
-A *document* is an object linked to a with prototype functions 
+A *document* is .........
+
+Code:
 
 	_exports = (neodb) ->
-		neodb = neodb
 
 		(Model) ->
 	

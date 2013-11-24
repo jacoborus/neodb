@@ -83,6 +83,8 @@ Creates a new Document for Collection.
 
 Document will be created empty if `data` is empty or not passed.
 
+Code:
+
 			Model : ->
 				neodb.Model @
 
@@ -101,6 +103,8 @@ Parameters:
 
 Returns proccessed schema
 
+Code:
+
 			addSchema : (schemamodel, callback) ->
 			
 @schema = bake @, schema, callback
@@ -112,7 +116,7 @@ Collection#insert( docs, cb )
 
 Insert new document/s in Collection
 
-Parameters:
+**Parameters:**
 
 - `docs` `Object|Array`: document/s to be stored
 - `callback` `Function`: is optional, signature: error, documents inserted
@@ -137,7 +141,7 @@ Returns documents inserted
 Collection#find( query, callback )
 ----------------------------------
 
-Parameters:
+**Parameters:**
 
 - `query` :
 - `callback` :
@@ -158,7 +162,7 @@ Returns `callback`, signature: err, documents
 Collection#findOne( query, callback )
 -------------------------------------
 
-Params:
+**Parameters:**
 
 - `query`: a nedb query formatted
 - `callback`: optional, signature: error, result document

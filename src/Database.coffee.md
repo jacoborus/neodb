@@ -2,10 +2,14 @@
 Database
 ========
 
-	_exports = (neodb) ->
-		
-		class Database
+Database explanation
 
+
+Code:
+
+	_exports = (neodb) ->
+		class Database
+		
 
 
 Database#Constructor( [route] )
@@ -17,6 +21,7 @@ Create and/or connect a database
 
 If no `route` database is non persistant
 
+Code:
 			constructor: (@route = false) ->
 
 
@@ -55,37 +60,6 @@ Code:
 					callback 'collectionName not valid'			
 
 
-
-Database#dropCollection( collectionName, [callback] )
------------------------------------------------------
-
-Drop a collection from Database
-
-**Parameters:**
-
-- `collectionName` `String`: name of collection to drop
-- `callback` `Function`: (optional) signature: error, `String` name of collection
-
-**Returns**:
-
-- `String`: name of dropped collection if dropped
-- `false`: if not collection dropped
-
-.
-
-dropCollection: (collectionName, callback) ->
-	if collectionName? and typeof collectionName is 'string'
-		if @[collectionName]?
-			delete @[collectionName]
-			callback(null, collectionName) if callback
-			collectionName
-		callback "No collection found: #{collectionName}" if callback
-		false
-	else
-		callback 'Invalid collectionName' if callback
-		false
-
-
 Database#clean( callback )
 --------------------------
 
@@ -97,7 +71,7 @@ Remove all documents of all collections in database
 
 Code:
 
-clean: (callback) ->
+			clean: (callback) ->
 
 
 	module.exports = _exports

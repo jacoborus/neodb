@@ -3,9 +3,7 @@ Model
 ========
 	
 	_exports = (neodb) ->
-
 		(collection) ->
-
 			class Model
 
 
@@ -23,6 +21,8 @@ Code:
 
 				collection: collection
 
+
+
 Model#insert( callback )
 ---------------------------
 
@@ -33,6 +33,8 @@ Insert document in its collection.
 - `callback` is optional, signature: error, new Document
 
 **Returns:** `Object` : document/s inserted
+
+Code:
 
 				insert : (doc, callback) ->
 					@collection.insert doc, callback
@@ -49,6 +51,8 @@ Parameters:
 - `callback` (optional)
 
 **Returns:** **`callback`**, signature: error
+
+Code:
 
 				drop : (query, callback) ->
 					@collection.drop query, callback
