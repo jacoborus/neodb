@@ -25,13 +25,13 @@ A Collection has the next structure:
 
 **Parameters:**
 
-- **`name`** `String`: collection will be inserted as `database[name]` if `database` is passed
-- **`options`** `Object`:
-	- **`database`** `Object|null`: database to insert this new collection into, if `null` 
+- `name` `String`: collection will be inserted as `database[name]` if `database` is passed
+- `options` `Object`:
+	- `database` `Object|null`: database to insert this new collection into, if `null` 
 	Collection will be treated as an orphan, but it will have a virtual database for itself
-	- **`schema`** `Object|null`: Schema for validation and relationships
-	- **`inMemoryOnly`** `Boolean`: if `true` collection is not persistant, by default is false.
-- **`callback`** `Function`: signature error, the collection itself
+	- `schema` `Object|null`: Schema for validation and relationships
+	- `inMemoryOnly` `Boolean`: if `true` collection is not persistant, by default is false.
+- `callback` `Function`: signature error, the collection itself
 
 Code:
 
@@ -79,7 +79,7 @@ Creates a new Document for Collection.
 
 **Parameters:**
 
-- **`data`** `Object`: data to fill new returned document
+- `data` `Object`: data to fill new returned document
 
 Document will be created empty if `data` is empty or not passed.
 
