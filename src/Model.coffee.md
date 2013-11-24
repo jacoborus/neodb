@@ -15,7 +15,7 @@ Model#constructor( )
 
 **Parameters:**
 
-- **`collection`** `Object`: Collection to insert the Document when saved
+- `collection` `Object`: Collection to insert the Document when saved
 
 Code:
 
@@ -30,7 +30,7 @@ Insert document in its collection.
 
 **Parameters:**
 
-- **`callback`** is optional, signature: error, new Document
+- `callback` is optional, signature: error, new Document
 
 **Returns:** `Object` : document/s inserted
 
@@ -55,24 +55,14 @@ Parameters:
 
 
 
-Model#prepare( callback )
-------------------------
-Extends Document with its own properties and make it pass the initialize process.
-* `callback`
-
-prepare : (callback) ->
-	@_id = @elem._id if @elem._id
-	@elem[x] = @[x] for x of @elem
-	callback() if callback
-
-
-
 Model#update( callback )
 ------------------------
 
 Update the Document in database passing middleware
 
-* `callback` is optional, signature: err, updated Document
+- `callback` is optional, signature: err, updated Document
+
+Code:
 
 				update : (query, doc, options, callback) ->
 					@collection.update  query, doc, options, callback

@@ -180,8 +180,8 @@ Collection#findById( id, callback )
 
 **Params**:
 
-- **`id`**: `_id` of target document
-- **`callback`**: optional, signature: error, result document
+- `id`: `_id` of target document
+- `callback`: optional, signature: error, result document
 
 **Returns** an `Object`, the document itself
 
@@ -223,7 +223,7 @@ Remove all documents of collection
 
 **Parameters:**
 
-- **`callback`** `Function` (optional): signature: err, numRemoved
+- `callback` `Function` (optional): signature: err, numRemoved
 
 **Returns:**  `String`: collection name
 

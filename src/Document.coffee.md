@@ -18,9 +18,9 @@ Document#Constructor( [data] )
 Extends Document with `data`, which contains the document data.
 Parameters:
 
-- **`data`** `Object`: (by default {}) Data to be inserted as a document
+- `data` `Object`: (by default {}) Data to be inserted as a document
 
-**Returns** 
+Code:
 
 				# if is an empty document fill @data with {}
 				constructor: (data) ->
@@ -36,9 +36,9 @@ Document#insert( callback )
 Insert document in its collection.
 Parameters:
 
-- **`callback`** is optional, signature: error, new document
+- `callback` is optional, signature: error, new document
 Returns:
-- **`Object`** : document/s inserted
+- `Object` : document/s inserted
 
 Code:
 
@@ -53,9 +53,11 @@ Document#drop( callback )
 Remove document from its collection.
 **Parameters:**
 
-- **`callback`** (optional)
+- `callback` (optional)
 
 **Returns:** `callback`, signature: error
+
+Code:
 
 				drop : (callback) ->
 					if @_id
@@ -67,38 +69,31 @@ Remove document from its collection.
 
 
 Document#prepare( callback )
-------------------------
+----------------------------
 
 Extends document with its own properties and make it pass the initialize process.
-
-**Parameters:**
-
-- **`callback`**
-
-prepare : (callback) ->
-	@_id = @elem._id if @elem._id
-	@elem[x] = @[x] for x of @elem
-	callback() if callback
 
 
 
 Document#update( callback )
-------------------------
+---------------------------
 
 Update the document in database passing middleware
-* `callback` is optional, signature: err, updated document
+
+- `callback` (optional) signature: err, updatedDoc
+
+Code:
 
 				update : (callback) ->
-					# @prepare =>
 					if @_id
 						super
 							_id: @_id
 							@
 							{multi:false, upsert:false}
 							(err, replaced)->
-								callback err,replaced if callback
+								if callback then callback err, replaced else replaced
 					else
-						callback 'Cannot update, object is not in collection'
+						if callback then callback 'Cannot update, object is not in collection' else 'false'
 
 
 

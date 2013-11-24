@@ -13,7 +13,7 @@ Database#Constructor( [route] )
 
 Create and/or connect a database
 
-- **`route`** `String` (optional): indicates the folder to save the database
+- `route` `String` (optional): indicates the folder to save the database
 
 If no `route` database is non persistant
 
@@ -28,11 +28,11 @@ Adds a collection into Database[`collectionName`]
 
 **Parameters:**
 
-- **`collectionName`** `String`:name of collection will be inserted as `database[collectionName]`
-- **`options`** `Object`:
-	- **`schema`** `Object`: Schema for validation and relationships
-	- **`inMemoryOnly`** `Boolean`: `false` by default, indicator of non persitant collection
-- **`callback`** `Function`: (optional) signature: error, inserted collection
+- `collectionName` `String`:name of collection will be inserted as `database[collectionName]`
+- `options` `Object`:
+	- `schema` `Object`: Schema for validation and relationships
+	- `inMemoryOnly` `Boolean`: `false` by default, indicator of non persitant collection
+- `callback` `Function`: (optional) signature: error, inserted collection
 
 Code:
 
@@ -63,13 +63,13 @@ Drop a collection from Database
 
 **Parameters:**
 
-- **`collectionName`** `String`: name of collection to drop
-- **`callback`** `Function`: (optional) signature: error, `String` name of collection
+- `collectionName` `String`: name of collection to drop
+- `callback` `Function`: (optional) signature: error, `String` name of collection
 
 **Returns**:
 
-- **`String`**: name of dropped collection if dropped
-- **`false`**: if not collection dropped
+- `String`: name of dropped collection if dropped
+- `false`: if not collection dropped
 
 .
 
@@ -93,7 +93,7 @@ Remove all documents of all collections in database
 
 **Parameter:**
 
-- **`callback`** `function`: no signature
+- `callback` `function`: no signature
 
 Code:
 
