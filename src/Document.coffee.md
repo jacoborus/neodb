@@ -6,95 +6,85 @@ A *document* is .........
 
 Code:
 
-	_exports = (neodb) ->
-
-		(Model) ->
-	
-			class Document extends Model
+	_exports = (collection) ->
+		class Document
 
 
-Document#Constructor( [data] )
--------------------------------------
+Document#Constructor( `[data]` )
+--------------------------------
 
 Extends Document with `data`, which contains the document data.
-Parameters:
 
-- `data` `Object`: (by default {}) Data to be inserted as a document
-
-Code:
-
-				# if is an empty document fill @data with {}
-				constructor: (data) ->
-					data = {} if not data?
-					for x of data
-						@[x] = data[x]
-
-
-
-Document#insert( callback )
----------------------------
-
-Insert document in its collection.
-Parameters:
-
-- `callback` is optional, signature: error, new document
-Returns:
-- `Object` : document/s inserted
-
-Code:
-
-				insert : (callback) ->
-					super @, callback
-
-
-
-Document#drop( callback )
--------------------------
-
-Remove document from its collection.
 **Parameters:**
 
-- `callback` (optional)
-
-**Returns:** `callback`, signature: error
+- `[data] <Object>` by default {}. Data to be inserted as a document
 
 Code:
 
-				drop : (callback) ->
-					if @_id
-						super {_id: @_id}, callback
-					else
-						errorMsg = 'Cannot remove, object is not in collection'
-						if callback then callback errorMsg else errorMsg
+			# if data is null, document is empty
+			constructor : (data = {}) ->
+				for x of data
+					@[x] = data[x]
+
+			collection : collection
+
+
+Document#insert( `[callback]` )
+-------------------------------
+
+Insert document in its collection.
+
+**Parameters:**
+
+- `[callback] <Function>` signature: error, new document
+
+**Returns:** `<Object|Array>` : inserted document|documents
+
+Code:
+
+			insert : (callback) ->
+				@collection.insert doc, callback
 
 
 
-Document#prepare( callback )
-----------------------------
+Document#drop( `[callback]` )
+-----------------------------
 
-Extends document with its own properties and make it pass the initialize process.
+Remove document from its collection.
+
+**Parameters:**
+
+- `[callback] <Function>` signature:  err, numRemoved
+
+Code:
+
+			drop : (callback) ->
+				if @_id
+					@collection.drop {_id: @_id}, callback
+				else
+					callback 'Cannot remove, object is not in collection' if callback
 
 
 
-Document#update( callback )
----------------------------
+Document#update( `[callback]` )
+-------------------------------
 
 Update the document in database passing middleware
 
-- `callback` (optional) signature: err, updatedDoc
+- `[callback] <Function>` signature: err, updatedDoc
 
 Code:
 
-				update : (callback) ->
-					if @_id
-						super
-							_id: @_id
-							@
-							{multi:false, upsert:false}
-							(err, replaced)->
-								if callback then callback err, replaced else replaced
-					else
-						if callback then callback 'Cannot update, object is not in collection' else 'false'
+			update : (callback) ->
+				if @_id
+					@collection.update
+						_id: @_id
+						@
+						{multi:false, upsert:false}
+						(err, replaced)->
+							if callback then callback err, replaced else replaced
+				else if callback
+					callback 'Cannot update, object is not in collection'
 
 
 

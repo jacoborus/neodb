@@ -5,6 +5,7 @@ Collection
 Collection uses a nedb dabase to store documents
 
 	nedb = require 'nedb'
+	neodbDocument = require './Document'
 
 	_export = (neodb) ->
 	
@@ -12,8 +13,8 @@ Collection uses a nedb dabase to store documents
 
 
 
-Collection#Constructor( @name, [options], [callback] )
-------------------------------------------------------
+Collection#Constructor( `@name`, `[options]`, `[callback]` )
+------------------------------------------------------------
 
 A Collection has the next structure:
 
@@ -25,13 +26,13 @@ A Collection has the next structure:
 
 **Parameters:**
 
-- `name` `String`: collection will be inserted as `database[name]` if `database` is passed
-- `options` `Object`:
-	- `database` `Object|null`: database to insert this new collection into, if `null` 
+- `name <String>`: collection will be inserted as `database[name]` if `database` is passed
+- `options <Object>`:
+	- `database <Object|null>` database to insert this new collection into, if `null` 
 	Collection will be treated as an orphan, but it will have a virtual database for itself
-	- `schema` `Object|null`: Schema for validation and relationships
-	- `inMemoryOnly` `Boolean`: if `true` collection is not persistant, by default is false.
-- `callback` `Function`: signature error, the collection itself
+	- `schema <Object|null>` Schema for validation and relationships
+	- `inMemoryOnly <Boolean>` if `true` collection is not persistant, by default is false.
+- `callback <Function>` signature error, collectionItself
 
 Code:
 
@@ -67,39 +68,32 @@ Code:
 						filename : @database.route + '/' + @name
 						autoload : true
 
-				this.Document = (data = {}) ->
-					new (@Doc()) data
 
 
+Collection#Document( `[data]` )
+-------------------------------
 
-Collection#Document( data )
----------------------------
-
-Creates a new Document for Collection.
+Creates a new document for Collection.
 
 **Parameters:**
 
-- `data` `Object`: data to fill new returned document
+- `[data] <Object>` data to fill new returned document
 
 Document will be created empty if `data` is empty or not passed.
 
 Code:
 
-			Model : ->
-				neodb.Model @
-
-			Doc : ->
-				neodb.Document @Model()
+			Document : neodbDocument @
 
 
-Collection#addSchema( schemaModel )
+Collection#addSchema( `schemaModel` )
 -----------------------------------
 
 Adds a new schema to `Collection.schema` and compiles its validator
 
 Parameters:
 
-- `schemamodel` `Object`: schema model for documents
+- `schemamodel <Object>` schema model for documents
 
 Returns proccessed schema
 
@@ -111,15 +105,15 @@ Code:
 
 
 
-Collection#insert( docs, cb )
------------------------------
+Collection#insert( `docs`, `[callback]` )
+-----------------------------------------
 
 Insert new document/s in Collection
 
 **Parameters:**
 
-- `docs` `Object|Array`: document/s to be stored
-- `callback` `Function`: is optional, signature: error, documents inserted
+- `docs <Object|Array>` document/s to be stored
+- `[callback] <Function>`: is optional, signature: error, documents inserted
 
 Returns documents inserted
 
@@ -130,23 +124,23 @@ Returns documents inserted
 						callback err
 					# si hemos guardado un único documento
 					else if newDocs.length is undefined
-						modelo = @Document newDocs
+						modelo = new @Doc newDocs
 					else # si hemos guardado múltiples documentos
 						modelo = for obj in newDocs
-							@Document obj
+							new @Doc obj
 					callback null, modelo if callback
 
 
 
-Collection#find( query, callback )
-----------------------------------
+Collection#find( `query`, `[callback]` )
+----------------------------------------
 
 **Parameters:**
 
-- `query` :
-- `callback` :
+- `query <Object>`
+- `[callback] <Function>`
 
-Returns `callback`, signature: err, documents
+**Returns** `callback`, signature: err, documents
 
 			find : (query, callback) ->
 				@dS.find query, (err, result) =>
@@ -154,20 +148,20 @@ Returns `callback`, signature: err, documents
 						if callback then callback err else {}
 					else
 						docs = for doc in result
-							@Document doc
+							new @Doc doc
 						if callback then callback null, docs else docs
 
 
 
-Collection#findOne( query, callback )
--------------------------------------
+Collection#findOne( `query`, `[callback]` )
+-------------------------------------------
 
 **Parameters:**
 
-- `query`: a nedb query formatted
-- `callback`: optional, signature: error, result document
+- `query <Object>` a nedb query formatted
+- `[callback] <Function>` optional, signature: error, resultDocument
 
-Returns an `Object`, the document itself
+**Returns** an `Object`, the document itself
 
 			findOne : (query, callback) ->
 
@@ -175,12 +169,12 @@ Returns an `Object`, the document itself
 					if err
 						if callback then callback err else undefined
 					else
-						if callback then callback null, @Document doc else doc
+						if callback then callback null, new @Doc doc else doc
 
 
 
-Collection#findById( id, callback )
------------------------------------
+Collection#findById( `id`, `[callback]` )
+-----------------------------------------
 
 **Params**:
 
@@ -195,41 +189,41 @@ Collection#findById( id, callback )
 					if err
 						if callback then callback err else null
 					else
-						if callback then callback null, @Document doc else doc
+						if callback then callback null, new @Doc doc else doc
 
 
-Collection#update( query, update, options, callback )
------------------------------------------------------
+Collection#update( `query`, `update`, `[options]`, `[callback]` )
+-----------------------------------------------------------------
 
 			update : (query, update, options, callback) ->
 				@dS.update query, update, options, callback
 
 
-Collection#drop( query, callback )
-----------------------------------
+Collection#drop( `query`, `[callback]` )
+----------------------------------------
 
 			drop : (query, callback) ->
 				@dS.remove query, {}, callback
 
 
-Collection#ensureIndex( options, cb )
--------------------------------------
+Collection#ensureIndex( `options`, `[callback]` )
+-------------------------------------------------
 
 ensureIndex : (options, callback) ->
 
 @dS.ensureIndex options, callback
 
 
-Collection#clean( callback )
-----------------------------
+Collection#clean( `[callback]` )
+--------------------------------
 
 Remove all documents of collection
 
 **Parameters:**
 
-- `callback` `Function` (optional): signature: err, numRemoved
+- `callback <Function>` (optional): signature: err, numRemoved
 
-**Returns:**  `String`: collection name
+**Returns:**  `<String>` collection name
 
 
 

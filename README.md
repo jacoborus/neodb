@@ -51,7 +51,34 @@ The permitted SchemaTypes are
 
 ## API docs
 
-* [Database](./src/Database.coffee.md)
-* [Collection](./src/Collection.coffee.md)
-* [Model](./src/Model.coffee.md)
-* [Schema](./src/Schema.coffee.md)
+- [Database](./src/Database.coffee.md)
+	- Database#Constructor
+	- Database#addCollection
+	- Database#clean
+
+- [Collection](./src/Collection.coffee.md)
+	- Collection#Constructor
+	- Collection#addSchema
+	- Collection#insert
+	- Collection#find
+	- Collection#findOne
+	- Collection#findById
+	- Collection#update
+	- Collection#drop
+	- Collection#ensureindex
+	- Collection#clean
+
+- [Model](./src/Model.coffee.md)
+	- Model#constructor
+	- Model#insert
+	- Model#drop
+	- Model#update
+
+- [Document](./src/Document.coffee.md)
+	- [Document#constructor](./src/Document.coffee.md#constructor)
+	- Document#insert
+	- Document#drop
+	- Document#update
+
+- [Schema](./src/Schema.coffee.md)
+	-

@@ -12,32 +12,33 @@ Code:
 		
 
 
-Database#Constructor( [route] )
--------------------------------
+Database#Constructor( `[route]` )
+---------------------------------
 
 Create and/or connect a database
 
-- `route` `String` (optional): indicates the folder to save the database
+- `route <String>` (optional): indicates the folder to save the database
 
 If no `route` database is non persistant
 
 Code:
+
 			constructor: (@route = false) ->
 
 
 
-Database#addCollection( collectionName, [options], [callback] )
--------------------------------------------------------------------------------
+Database#addCollection( `collectionName`, `[options]`, `[callback]` )
+---------------------------------------------------------------------
 
 Adds a collection into Database[`collectionName`]
 
 **Parameters:**
 
-- `collectionName` `String`:name of collection will be inserted as `database[collectionName]`
-- `options` `Object`:
-	- `schema` `Object`: Schema for validation and relationships
-	- `inMemoryOnly` `Boolean`: `false` by default, indicator of non persitant collection
-- `callback` `Function`: (optional) signature: error, inserted collection
+- `collectionName <String>` name of collection will be inserted as `database[collectionName]`
+- `options <Object>`:
+	- `schema <Object>` Schema for validation and relationships
+	- `inMemoryOnly <Boolean>` by default is `false`, indicator of non persitant collection
+- `[callback] <Function>` signature: error, inserted collection
 
 Code:
 
@@ -60,14 +61,15 @@ Code:
 					callback 'collectionName not valid'			
 
 
-Database#clean( callback )
---------------------------
+
+Database#clean( `[callback]` )
+------------------------------
 
 Remove all documents of all collections in database
 
 **Parameter:**
 
-- `callback` `function`: no signature
+- `callback <function>` no signature
 
 Code:
 
