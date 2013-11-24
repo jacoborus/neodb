@@ -1,0 +1,23 @@
+{
+  "name": "neodb",
+  "version": "0.0.0",
+  "description": "ODM for NeDB",
+  "main": "index.js",
+  "dependencies": {
+    "nedb": "~0.8.12"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha --compilers coffee:coffee-script"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@bitbucket.org/jacoborus/neodb.git"
+  },
+  "keywords": [
+    "ODM",
+    "database"
+  ],
+  "author": "Jacobo Tabernero (github.com/jacoborus) - jacobo@xarope.eu",
+  "license": "MIT"
+}
