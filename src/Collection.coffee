@@ -24,12 +24,12 @@ _export = (neodb) ->
 		 * @param  {Function} callback 				signature error, collectionItself
 		 * @return {Object}            				collection itself
 		 *
-		 * 		A Collection has the next structure:
-		 * 		- name
-		 * 		- database: parent db
-		 * 		- schema : for validations and relationships
-		 * 		- inMemoryOnly: true if not persistant
-		 * 		- dS: data store
+		 * A Collection has the next structure:
+		 * - name
+		 * - database: parent db
+		 * - schema : for validations and relationships
+		 * - inMemoryOnly: true if not persistant
+		 * - dS: data store
 		###
 		constructor: (@name, options, callback ) ->
 			
@@ -69,22 +69,15 @@ _export = (neodb) ->
 		###
 		Document : neodbDocument @
 
+
+		###*
+		 * Adds a new schema to `Collection.schema` and compiles its validator
+		 * @param {Object}   schemamodel structure model
+		 * @param {Function} callback
+		 * @return {Object} processed schema after extend the old one
 		###
-		Collection#addSchema( `schemaModel` )
-		-----------------------------------
-
-		Adds a new schema to `Collection.schema` and compiles its validator
-
-		Parameters:
-
-		- `schemamodel <Object>` schema model for documents
-
-		Returns proccessed schema
-
-		###
-
 		addSchema : (schemamodel, callback) ->
-		#@schema = bake @, schema, callback
+			#@schema = bake @, schema, callback
 
 
 		###*
@@ -155,36 +148,42 @@ _export = (neodb) ->
 		Collection#update( `query`, `update`, `[options]`, `[callback]` )
 		-----------------------------------------------------------------
 		###
-		update : (query, update, options, callback) ->
-			@dS.update query, update, options, callback
-
+		###*
+		 * Update documents that match into query with update data
+		 * @param  {Object}   query    nedb query formatted query
+		 * @param  {Object}   update   data to update matched documents
+		 * @param  {Boolean}   multi  allows the modification of several documents
+		 * @param  {Function} callback signature: err, numReplaced
+		 * @return {Object||Array}            updated document
 		###
-		Collection#drop( `query`, `[callback]` )
-		----------------------------------------
+		update : (query, update, multi=false, callback) ->
+			@dS.update query, update, {multi:multi}, callback
+
+		###*
+		 * Remove document from collection
+		 * @param  {Object}   query    nedb query formatted query
+		 * @param  {Function} callback signature: err, numRemoved
+		 * @return {Number}            numRemoved
 		###
 		drop : (query, callback) ->
 			@dS.remove query, {}, callback
 
+
+		###*
+		 * Index fields of collection
+		 * @param  {Object}   options  
+		 * @param  {Function} callback signature: error
 		###
-		Collection#ensureIndex( `options`, `[callback]` )
-		-------------------------------------------------
+		ensureIndex : (options, callback) ->
+
+			# @dS.ensureIndex options, callback
+
+		###*
+		 * Remove all documents of collection
+		 * @param  {Function} callback numRemoved
+		 * @return {Number}            numRemoved
 		###
-		# ensureIndex : (options, callback) ->
-
-		# @dS.ensureIndex options, callback
-
-###
-Collection#clean( `[callback]` )
---------------------------------
-
-Remove all documents of collection
-
-**Parameters:**
-
-- `callback <Function>` (optional): signature: err, numRemoved
-
-**Returns:**  `<String>` collection name
-###
+		clean : (callback) ->
 
 
 module.exports = _export
