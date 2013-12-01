@@ -39,7 +39,12 @@ _exports = (neodb) ->
 		- `[callback] <Function>` signature: error, inserted collection
 
 		###
-
+		###*
+		 * Adds a new collection to database
+		 * @param {String}   collectionName name of collection will be inserted as `database[collectionName]`
+		 * @param {Object}   options        
+		 * @param {Function} callback       signature: error, insertedDocument
+		###
 		addCollection: (collectionName, options, callback) ->
 
 			if not options

@@ -13,9 +13,15 @@ Experimental interface to access embedded nedb databases. In early development
 
 ## Usage
 
+js
 ```javascript
 // Get dependency
 var neodb = require('neodb');
+```
+coffee
+```coffeescript
+# Get dependency
+neodb = require 'neodb'
 ```
 
 ## Quick start
@@ -51,12 +57,12 @@ The permitted SchemaTypes are
 
 ## API docs
 
-- [Database](./src/Database.coffee.md)
+- Database
 	- Database#Constructor
 	- Database#addCollection
 	- Database#clean
 
-- [Collection](./src/Collection.coffee.md)
+- Collection
 	- Collection#Constructor
 	- Collection#addSchema
 	- Collection#insert
@@ -68,17 +74,17 @@ The permitted SchemaTypes are
 	- Collection#ensureindex
 	- Collection#clean
 
-- [Model](./src/Model.coffee.md)
+- Model
 	- Model#constructor
 	- Model#insert
 	- Model#drop
 	- Model#update
 
-- [Document](./src/Document.coffee.md)
-	- [Document#constructor](./src/Document.coffee.md#constructor)
+- Document
+	- Document#constructor
 	- Document#insert
 	- Document#drop
 	- Document#update
 
-- [Schema](./src/Schema.coffee.md)
+- Schema
 	-
