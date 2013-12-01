@@ -2,26 +2,24 @@
 Schema
 ======
 ###
-class Schema
-###
-Schema#constructor( collection, schemaModel )
----------------------------------------------
 
-Create a new Schema and set it as `collection`.schema
-###
+class Schema
+
+	###*
+	 * Create a new Schema and set it as `collection`.schema
+	 * @param  {Object} @collection  collection to set it as schema
+	 * @param  {Object} @schemaModel model structure
+	 * @return {Object}              resultant schema of collection after extend the old one
+	###
 	constructor: (@collection, @schemaModel) ->
 
-###
-Schema#insert( schemaModel, [callback] )
-----------------------------------------
 
-Extend the actual schema model or create a new one.
-
-- `schemaModel`
-- `callback` is optional, signature: error, schema
-
-###
-
+	###*
+	 * Extend the actual schema model or create a new one
+	 * @param  {Object}   schemaModel model structure
+	 * @param  {Function} callback    signature: error, schema
+	 * @return {Object}               resultant schema after extend the old one
+	###
 	insert : (schemaModel, callback) ->
 		@schemaModel = schemaModel
 		callback()

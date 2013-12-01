@@ -58,33 +58,27 @@ The permitted SchemaTypes are
 ## API docs
 
 - Database
-	- Database#Constructor
-	- Database#addCollection
-	- Database#clean
+	- constructor
+	- addCollection
+	- clean
 
 - Collection
-	- Collection#Constructor
-	- Collection#addSchema
-	- Collection#insert
-	- Collection#find
-	- Collection#findOne
-	- Collection#findById
-	- Collection#update
-	- Collection#drop
-	- Collection#ensureindex
-	- Collection#clean
-
-- Model
-	- Model#constructor
-	- Model#insert
-	- Model#drop
-	- Model#update
+	- constructor
+	- addSchema
+	- insert
+	- find
+	- findOne
+	- findById
+	- update
+	- drop
+	- ensureindex
+	- clean
 
 - Document
-	- Document#constructor
-	- Document#insert
-	- Document#drop
-	- Document#update
+	- constructor
+	- insert
+	- drop
+	- update
 
 - Schema
 	-

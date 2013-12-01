@@ -9,41 +9,22 @@ _exports = (neodb) ->
 	class Database
 		
 
+		###*
+		 * Create and/or connect a database
+		 * @param  {String||Boolean} route 	by default `false`, indicates the folder to save the database
+		 * @return {Object} 				database itself
+		 * If no `route` database is non persistant
 		###
-		Database#Constructor( `[route]` )
-		---------------------------------
-
-		Create and/or connect a database
-
-		- `route <String>` (optional): indicates the folder to save the database
-
-		If no `route` database is non persistant
-
-		###
-
 		constructor: (@route = false) ->
 
 
-		###
-		Database#addCollection( `collectionName`, `[options]`, `[callback]` )
-		---------------------------------------------------------------------
-
-		Adds a collection into Database[`collectionName`]
-
-		**Parameters:**
-
-		- `collectionName <String>` name of collection will be inserted as `database[collectionName]`
-		- `options <Object>`:
-			- `schema <Object>` Schema for validation and relationships
-			- `inMemoryOnly <Boolean>` by default is `false`, indicator of non persitant collection
-		- `[callback] <Function>` signature: error, inserted collection
-
-		###
 		###*
-		 * Adds a new collection to database
-		 * @param {String}   collectionName name of collection will be inserted as `database[collectionName]`
-		 * @param {Object}   options        
-		 * @param {Function} callback       signature: error, insertedDocument
+		 * Adds a collection into Database[`collectionName`]
+		 * @param {String} collectionName 			name of collection will be inserted as `database[collectionName]`
+		 * @param {Object} [options]
+		 * @param {Object} [options.Schema]			schema for validation and relationships
+		 * @param {Boolean} [options.inMemoryOnly]	indicator of non persitant collection
+		 * @param {Function} [callback]    			signature: error, insertedDocument
 		###
 		addCollection: (collectionName, options, callback) ->
 
@@ -64,18 +45,11 @@ _exports = (neodb) ->
 				callback 'collectionName not valid'			
 
 
+		###*
+		 * Remove all documents of all collections in database
+		 * @param  {Function} [callback] 	async callback
+		 * @return {Number}            		number of documents removed
 		###
-		Database#clean( `[callback]` )
-		------------------------------
-
-		Remove all documents of all collections in database
-
-		**Parameter:**
-
-		- `callback <function>` no signature
-
-		###
-
 		clean: (callback) ->
 
 

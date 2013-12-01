@@ -14,30 +14,23 @@ _export = (neodb) ->
 
 	class Collection
 
-
+		###*
+		 * Collection constructor
+		 * @param  {String} @name  					name of collection
+		 * @param  {Object} options 				Object with options
+		 * @param  {Object} options.database 		database to insert this new collection into, if `null` Collection will be treated as an orphan, but it will have a virtual database for itself
+		 * @param  {Object} options.schema			Schema for validation and relationships
+		 * @param  {Boolean} options.inMemoryOnly	if `true` collection is not persistant
+		 * @param  {Function} callback 				signature error, collectionItself
+		 * @return {Object}            				collection itself
+		 *
+		 * 		A Collection has the next structure:
+		 * 		- name
+		 * 		- database: parent db
+		 * 		- schema : for validations and relationships
+		 * 		- inMemoryOnly: true if not persistant
+		 * 		- dS: data store
 		###
-		Collection#Constructor( `name`, `[options]`, `[callback]` )
-		------------------------------------------------------------
-
-		A Collection has the next structure:
-
-		- name
-		- database: parent db
-		- schema : for validations and relationships
-		- inMemoryOnly: true if not persistant
-		- dS: data store
-
-		**Parameters:**
-
-		- `name <String>`: collection will be inserted as `database[name]` if `database` is passed
-		- `[options] <Object>`:
-			- `database <Object|null>` database to insert this new collection into, if `null` 
-			Collection will be treated as an orphan, but it will have a virtual database for itself
-			- `schema <Object|null>` Schema for validation and relationships
-			- `inMemoryOnly <Boolean>` if `true` collection is not persistant, by default is false.
-		- `[callback] <Function>` signature error, collectionItself
-		###
-
 		constructor: (@name, options, callback ) ->
 			
 			# set options and callback even options not passed as parameters
@@ -70,21 +63,10 @@ _export = (neodb) ->
 					filename : @database.route + '/' + @name
 					autoload : true
 
-
+		###*
+		 * Document model
+		 * @type {Function}
 		###
-		Collection#Document( `[data]` )
-		-------------------------------
-
-		Creates a new document for Collection.
-
-		**Parameters:**
-
-		- `[data] <Object>` data to fill new returned document
-
-		Document will be created empty if `data` is empty or not passed.
-
-		###
-
 		Document : neodbDocument @
 
 		###
@@ -105,20 +87,12 @@ _export = (neodb) ->
 		#@schema = bake @, schema, callback
 
 
+		###*
+		 * Insert new document/s in collection
+		 * @param  {Object||Array}   docs     document/s to be stored
+		 * @param  {Function} callback signature: error, insertedDocuments
+		 * @return {Object}            inserted document
 		###
-		Collection#insert( `docs`, `[callback]` )
-		-----------------------------------------
-
-		Insert new document/s in Collection
-
-		**Parameters:**
-
-		- `docs <Object|Array>` document/s to be stored
-		- `[callback] <Function>`: is optional, signature: error, documents inserted
-
-		Returns documents inserted
-		###
-
 		insert : (docs, callback) ->
 
 			@dS.insert docs, (err, newDocs) =>
@@ -133,16 +107,11 @@ _export = (neodb) ->
 				callback null, modelo if callback
 
 
-		###
-		Collection#find( `query`, `[callback]` )
-		----------------------------------------
-
-		**Parameters:**
-
-		- `query <Object>`
-		- `[callback] <Function>`
-
-		**Returns** `callback`, signature: err, documents
+		###*
+		 * Find documents in collection
+		 * @param  {Object}   query    nedb query object
+		 * @param  {Function} callback signature: err, doc/s
+		 * @return {Object||Array}            doc/docs
 		###
 		find : (query, callback) ->
 			@dS.find query, (err, result) =>
@@ -154,16 +123,11 @@ _export = (neodb) ->
 					if callback then callback null, docs else docs
 
 
-		###
-		Collection#findOne( `query`, `[callback]` )
-		-------------------------------------------
-
-		**Parameters:**
-
-		- `query <Object>` a nedb query formatted
-		- `[callback] <Function>` optional, signature: error, resultDocument
-
-		**Returns** an `Object`, the document itself
+		###*
+		 * Return the first document of a search
+		 * @param  {Object}   query    a nedb query formatted
+		 * @param  {Function} callback signature: error, resultDocument
+		 * @return {Object}            resultDocument
 		###
 		findOne : (query, callback) ->
 
@@ -173,17 +137,11 @@ _export = (neodb) ->
 				else
 					if callback then callback null, new @Doc doc else doc
 
-
-		###
-		Collection#findById( `id`, `[callback]` )
-		-----------------------------------------
-
-		**Params**:
-
-		- `id`: `_id` of target document
-		- `callback`: optional, signature: error, result document
-
-		**Returns** an `Object`, the document itself
+		###*
+		 * Find a document by identifier
+		 * @param  {String}   id       
+		 * @param  {Function} callback signature: error, resultDocument
+		 * @return {Object}            resultDocument
 		###
 		findById : (id, callback) ->
 					
