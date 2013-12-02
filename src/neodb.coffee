@@ -3,6 +3,7 @@ neodb
 =====
 ###	
 # get dependencies
+require 'coffee-trace'
 Database = require './Database'
 Collection = require './Collection'
 #Schema = require './Schema'

@@ -5,8 +5,11 @@ Document
 A *document* is .........
 
 ###
+collection = ''
 
 _exports = (collection) ->
+
+	collection = collection
 	class Document
 
 		###*
@@ -19,16 +22,13 @@ _exports = (collection) ->
 				@[x] = data[x]
 
 
-		collection : collection
-
-
 		###*
 		 * Inserts document itself in collection
 		 * @param  {Function} callback signature: err, insertedDoc
 		 * @return {Object}            inserted document
 		###
 		insert : (callback) ->
-			@collection.insert doc, callback
+			collection.insert doc, callback
 
 
 		###*
@@ -36,11 +36,11 @@ _exports = (collection) ->
 		 * @param  {Function} callback signature: error
 		 * @return {Object}            removedDoc
 		###
-		drop : (callback) ->
+		remove : (callback) ->
 			if @_id
-				@collection.drop {_id: @_id}, callback
+				collection.remove {id: @_id}, callback
 			else
-				callback 'Cannot remove, object is not in collection' if callback
+				if callback then callback 'Cannot remove, object is not in collection' else {}
 
 
 		###*
@@ -50,13 +50,10 @@ _exports = (collection) ->
 		###
 		update : (callback) ->
 			if @_id
-				@collection.update
-					_id: @_id
-					@
-					{multi:false, upsert:false}
-					(err, replaced)->
-						if callback then callback err, replaced else replaced
-			else callback 'Cannot update, object is not in collection' if callback
+				collection.set @_id, @, (err, doc)->
+					if callback then callback err, doc else doc
+			else
+				callback 'Cannot update, object is not in collection' if callback
 
 
 module.exports = _exports

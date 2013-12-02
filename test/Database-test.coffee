@@ -18,9 +18,9 @@ describe 'Database constructor', ->
 	it 'return an object', ->
 		db = new neodb.Database()
 		expect( db ).to.be.a 'object'
-	it 'return an object with property route', ->
+	it 'return an object with private property dbPath', ->
 		db = new neodb.Database()
-		expect( db ).to.include.keys 'route'
+		expect( db.getPath ).to.equal ''
 	it 'return an object with property route=false by default"', ->
 		db = new neodb.Database()
 		expect( db.route ).to.equal false

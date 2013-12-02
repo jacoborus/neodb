@@ -5,17 +5,42 @@ Database
 Database explanation
 .....
 ###
+
+# private variables
+dbPath = ''
+
 _exports = (neodb) ->
 	class Database
 		
 
 		###*
 		 * Create and/or connect a database
-		 * @param  {String||Boolean} route 	by default `false`, indicates the folder to save the database
+		 * @param  {String||Boolean} path 	by default `false`, indicates the folder to save the database
 		 * @return {Object} 				database itself
-		 * If no `route` database is non persistant
+		 * If no `path` database is non persistant
 		###
-		constructor: (@route = false) ->
+		constructor: (path) ->
+			# save path
+			@setPath path
+			@
+
+
+		###*
+		 * set database folder path
+		 * @param {String} path relative route to database folder path
+		 * @return {String} relative path to database folder
+		###
+		setPath : (path) ->
+			if typeof path is 'string'
+				dbPath = path
+			else ''
+
+
+		###*
+		 * @return {String} path to database folder
+		###
+		getPath : ->
+			dbPath
 
 
 		###*

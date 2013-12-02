@@ -6,9 +6,19 @@
  * 
 ###
 
+Document = require './Document'
+Doc = ->
 
-nedb = require 'nedb'
-neodbDocument = require './Document'
+genId = ->
+	'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
+		r = Math.random()*16|0
+		v = if c is 'x' then r else (r&0x3|0x8)
+		v.toString 16
+
+name = undefined
+inMemoryOnly = true
+database = undefined
+schema = undefined
 
 _export = (neodb) ->
 
@@ -24,14 +34,13 @@ _export = (neodb) ->
 		 * @param  {Function} callback 				signature error, collectionItself
 		 * @return {Object}            				collection itself
 		 *
-		 * A Collection has the next structure:
+		 * A Collection has the next private properties:
 		 * - name
 		 * - database: parent db
 		 * - schema : for validations and relationships
 		 * - inMemoryOnly: true if not persistant
-		 * - dS: data store
 		###
-		constructor: (@name, options, callback ) ->
+		constructor: (name, options, callback ) ->
 			
 			# set options and callback even options not passed as parameters
 			if typeof options is 'function'
@@ -40,34 +49,25 @@ _export = (neodb) ->
 			else opts = options or {}
 
 			# set inMemoryOnly value if passed as option
-			@inMemoryOnly = if opts.inMemoryOnly and (typeof opts.inMemoryOnly is 'boolean')
+			inMemoryOnly = if opts.inMemoryOnly and (typeof opts.inMemoryOnly is 'boolean')
 				opts.inMemoryOnly
 			else false # default value
 
-			@dS = ''
-			@schema = false
+			schema = false
 
 			# set database from options parameter, if database is not passed 
 			# will create a new one and add this collection into it
 			if opts and opts.database
-				@database = opts.database
+				database = opts.database
 			else 
-				@database = new neodb.Database()
-				@database[@name] = @
+				database = new neodb.Database()
+				database[name] = @
 
 			# create datastore, if inMemoryOnly is true it will be not persistant
-			if (opts.inMemoryOnly and opts.inMemoryOnly is true) or @database.route is false
-				@dS = new nedb()
-			else
-				@dS = new nedb
-					filename : @database.route + '/' + @name
-					autoload : true
+			if (opts.inMemoryOnly and opts.inMemoryOnly is true) or database.getPath() is ''
+				inMemoryOnly = true
 
-		###*
-		 * Document model
-		 * @type {Function}
-		###
-		Document : neodbDocument @
+			Doc = Document @
 
 
 		###*
@@ -86,34 +86,108 @@ _export = (neodb) ->
 		 * @param  {Function} callback signature: error, insertedDocuments
 		 * @return {Object}            inserted document
 		###
-		insert : (docs, callback) ->
+		insert : (data, callback) ->
+			if typeof data is 'object'
+				# save one document
+				if data.length is undefined
+					id = genId()
+					@[id] = data
+					doc = new Doc @[id]
+					callback null, doc if callback
+					doc
+				# save multiple documents
+				else if typeof data.length is 'number'
+					ids = []
+					for i in data
+						ids[i] = genId()
+						@[ids[i]] = data[i]
+					docs = @findByIds ids
+					callback null, docs if callback
+					docs
 
-			@dS.insert docs, (err, newDocs) =>
-				if err
-					callback err
-				# si hemos guardado un único documento
-				else if newDocs.length is undefined
-					modelo = new @Doc newDocs
-				else # si hemos guardado múltiples documentos
-					modelo = for obj in newDocs
-						new @Doc obj
-				callback null, modelo if callback
+		###*
+		 * Find a document by identifier
+		 * @param  {String}   id       
+		 * @param  {Function} callback signature: error, resultDocument
+		 * @return {Object}            resultDocument
+		###
+		get : (id, callback) ->
+			if typeof id is 'string'
+				if @[id]
+					doc = new Doc @[id]
+					callback null, doc if callback
+					doc
+				else
+					callback null, {} if callback
+					{}
+			else
+				callback 'not valid identifier' if callback
+				{}
 
-
+		set : (id, newDoc, callback) ->
+			if @[id]
+				delete newDoc._id
+				for prop, value of newDoc
+					if typeof value isnt 'function'
+						@[id][prop] = value
+				doc = new Doc @[id]
+				callback null, doc if callback
+				doc
+			else
+				callback 'Document not found' if callback
+				false
 		###*
 		 * Find documents in collection
 		 * @param  {Object}   query    nedb query object
 		 * @param  {Function} callback signature: err, doc/s
 		 * @return {Object||Array}            doc/docs
 		###
-		find : (query, callback) ->
-			@dS.find query, (err, result) =>
-				if err
-					if callback then callback err else {}
-				else
-					docs = for doc in result
-						new @Doc doc
-					if callback then callback null, docs else docs
+		find : (query = false, callback) ->
+			queryOn = false
+			for prop of query
+				queryOn = true
+				break
+			if (query is false) or (queryOn is false)
+				callback null, @ if callback
+				@
+			else if typeof query isnt 'object'
+				callback 'Bad query'
+			else
+				ops =
+					$eq : (a, b) -> a is b
+					$gt : (a, b) -> a > b
+					$gte : (a, b) -> a >= b
+					$lt : (a, b) -> a < b
+					$lte : (a, b) -> a <= b
+					$ne : (a, b) -> a isnt b
+
+				result = []
+
+				for id, doc of @ when typeof doc isnt 'function'
+					ok = false
+					for prop, value of query
+						if query.hasOwnProperty prop
+							if typeof value is 'object'
+
+								for key of value
+									if value.hasOwnProperty key
+										ok = true if ops[key] value[key], doc[prop]
+										break
+								break if ok is false
+							
+							else
+								if typeof value is ('string' or 'number' or 'boolean')
+									ok = true if value is doc[prop]
+
+					if ok is true
+						dev = {}
+						for prop, value of @[id]
+							dev[prop] = @[id][prop]
+						dev._id = id
+						result.push new Doc dev
+
+				callback null, result if callback
+				result
 
 
 		###*
@@ -128,21 +202,7 @@ _export = (neodb) ->
 				if err
 					if callback then callback err else undefined
 				else
-					if callback then callback null, new @Doc doc else doc
-
-		###*
-		 * Find a document by identifier
-		 * @param  {String}   id       
-		 * @param  {Function} callback signature: error, resultDocument
-		 * @return {Object}            resultDocument
-		###
-		findById : (id, callback) ->
-					
-			@dS.findOne {_id: id}, (err, doc) =>
-				if err
-					if callback then callback err else null
-				else
-					if callback then callback null, new @Doc doc else doc
+					if callback then callback null, new Doc doc else doc
 
 		###
 		Collection#update( `query`, `update`, `[options]`, `[callback]` )
@@ -156,8 +216,11 @@ _export = (neodb) ->
 		 * @param  {Function} callback signature: err, numReplaced
 		 * @return {Object||Array}            updated document
 		###
-		update : (query, update, multi=false, callback) ->
-			@dS.update query, update, {multi:multi}, callback
+
+		update : (query, update, callback)->
+			@find query, (err, docs) ->
+				#for doc in docs
+				# extend docs with update
 
 		###*
 		 * Remove document from collection
@@ -165,18 +228,23 @@ _export = (neodb) ->
 		 * @param  {Function} callback signature: err, numRemoved
 		 * @return {Number}            numRemoved
 		###
-		drop : (query, callback) ->
-			@dS.remove query, {}, callback
 
+		remove : (query, callback) ->
+			@find query, (err, docs) =>
+				for doc in docs
+					delete @[doc._id]
+				callback null, docs.length if callback
+				docs.length
 
-		###*
-		 * Index fields of collection
-		 * @param  {Object}   options  
-		 * @param  {Function} callback signature: error
-		###
-		ensureIndex : (options, callback) ->
+		removeById : (id, callback) ->
+			if typeof id is 'string' and @[id]
+				delete @id
+				callback null, id if callback
+				id
+			else
+				callback 'Document not found' if callback
+				0
 
-			# @dS.ensureIndex options, callback
 
 		###*
 		 * Remove all documents of collection

@@ -4,7 +4,7 @@ neodb
 
 **NOT READY FOR USE**
 
-Experimental interface to access embedded nedb databases. In early development
+Experimental nodejs database
 
 ## Installation
 
@@ -70,14 +70,14 @@ The permitted SchemaTypes are
 	- findOne
 	- findById
 	- update
-	- drop
-	- ensureindex
+	- remove
+	- removeById
 	- clean
 
 - Document
 	- constructor
 	- insert
-	- drop
+	- remove
 	- update
 
 - Schema
