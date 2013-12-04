@@ -16,13 +16,11 @@ _exports = (neodb) ->
 		###*
 		 * Create and/or connect a database
 		 * @param  {String||Boolean} path 	by default `false`, indicates the folder to save the database
-		 * @return {Object} 				database itself
 		 * If no `path` database is non persistant
 		###
 		constructor: (path) ->
 			# save path
 			@setPath path
-			@
 
 
 		###*

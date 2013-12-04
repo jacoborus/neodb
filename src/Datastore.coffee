@@ -59,9 +59,7 @@ class datastore
 		fs.writeFile(filename, data, [options], callback)
 		fs.readFile '/path/to/some/file.txt', (err, data) ->
 			throw err if err
-			console.log(data);
-
-		archive.append doc.data, { name: doc.collection + '/' + doc.id }
+			console.log data
 
 
 	insertDocs : (docs, callback)->
@@ -70,18 +68,17 @@ class datastore
 				archive.append doc, { name: colName + '/' + id }
 
 
+	updateDoc : (doc, callback) ->
+
+
+	updateDocs : (docs, callback) ->
+
+
 	removeDoc : (id, callback) ->
 
-		# asdjaskdlj asñkldj añsd
-		# dasjh dlah sdljas dkj 
-		###
-		as-lkjdaklsdj añsj dás dkñlas
-		asjdlñ jañskld jasñkl djas
 
-		###
-	removeall : ->
-		
 	removeDocs : (ids, callback) ->
+
 
 
 module.exports = datastore
