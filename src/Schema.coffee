@@ -27,7 +27,7 @@ class Schema
 	val :
 
 		# comprueba si es un objeto vacío
-		emptyObj = (obj) ->
+		emptyObj : (obj) ->
 			for key in obj
 				if hasOwnProperty.call(obj, key) then return false
 			true 

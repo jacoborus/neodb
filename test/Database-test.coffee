@@ -18,29 +18,24 @@ describe 'Database constructor', ->
 	it 'return an object', ->
 		db = new neodb.Database()
 		expect( db ).to.be.a 'object'
-	it 'return an object with private property dbPath', ->
+	it 'return an object with private property dbPath "" by default', ->
 		db = new neodb.Database()
-		expect( db.getPath ).to.equal ''
-	it 'return an object with property route=false by default"', ->
-		db = new neodb.Database()
-		expect( db.route ).to.equal false
-	it 'return an object with property route = "./something"', ->
+		expect( db.getPath() ).to.equal ''
+	it 'return an object with property dbPath = "./something"', ->
 		db = new neodb.Database './something'
-		expect( db.route ).to.equal './something'
-	it 'return an object with property route = false if it is created a inMemoryOnly database', ->
-		db = new neodb.Database false
-		expect( db.route ).to.equal false
+		expect( db.getPath() ).to.equal './something'
+
 
 describe 'Database#addCollection', ->
 
 	it 'set this database as options.database', ->
 		db = new neodb.Database()
 		db.addCollection 'Books'
-		expect( db['Books'].database ).to.equal db
+		expect( db['Books'].getDb() ).to.equal db
 
 	it 'overwrites options.inMemoryOnly if database is not persistant', ->
 		db = new neodb.Database()
 		db.addCollection 'Books', {inMemoryOnly: false}
-		expect( db.Books.inMemoryOnly ).to.equal true
+		expect( db.Books.getInMemoryOnly() ).to.equal true
 
 describe 'Database#dropCollection', ->

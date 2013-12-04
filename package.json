@@ -20,7 +20,8 @@
   "author": "Jacobo Tabernero - jacobo@xarope.eu",
   "license": "MIT",
   "dependencies": {
-    "archiver": "~0.4.10"
+    "archiver": "~0.4.10",
+    "async": "~0.2.9"
   },
   "bugs": {
     "url": "https://github.com/jacoborus/neodb/issues"

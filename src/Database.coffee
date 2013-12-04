@@ -26,24 +26,6 @@ _exports = (neodb) ->
 
 
 		###*
-		 * set database folder path
-		 * @param {String} path relative route to database folder path
-		 * @return {String} relative path to database folder
-		###
-		setPath : (path) ->
-			if typeof path is 'string'
-				dbPath = path
-			else ''
-
-
-		###*
-		 * @return {String} path to database folder
-		###
-		getPath : ->
-			dbPath
-
-
-		###*
 		 * Adds a collection into Database[`collectionName`]
 		 * @param {String} collectionName 			name of collection will be inserted as `database[collectionName]`
 		 * @param {Object} [options]
@@ -62,13 +44,31 @@ _exports = (neodb) ->
 				opts = options
 
 			opts.database = @
-			opts.inMemoryOnly = true if @route is false
+			opts.inMemoryOnly = true if @getPath() is ''
 
 			if collectionName and (typeof collectionName is 'string')
 				@[collectionName] = new neodb.Collection collectionName, opts, callback
 			else if callback
 				callback 'collectionName not valid'			
 
+		dropCollection : (collectionName, callback) ->
+
+		###*
+		 * set database folder path
+		 * @param {String} path relative route to database folder path
+		 * @return {String} relative path to database folder
+		###
+		setPath : (path) ->
+			if typeof path is 'string'
+				dbPath = path
+			else ''
+
+
+		###*
+		 * @return {String} path to database folder
+		###
+		getPath : ->
+			dbPath
 
 		###*
 		 * Remove all documents of all collections in database

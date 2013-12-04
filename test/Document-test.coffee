@@ -8,6 +8,7 @@ neodb = require '../src/neodb'
 describe 'Document constructor', ->
 
 	it 'return an object', ->
-		doc = new neodb.Document()
+		col = new neodb.Collection 'Book'
+		doc = new col.Document()
 		doc.should.be.a 'object'
 
