@@ -3,16 +3,29 @@ class Validator
 	constructor : (schema)->
 		schema = schema
 
+	validate : (doc, callback) ->
 
-val =
+	clean : (callback) ->
+		for prop, value of @
+			if typeof value isnt 'function'
+				delete @[prop]
+		callback
 
-	# comprueba si es un objeto vacío
-	isEmptyObj : (obj) ->
-		for key in obj
-			if hasOwnProperty.call(obj, key) then return false
-		true 
+	update : (newSchema, callback) ->
+		for prop, value of newSchema
+			@[prop] = value
+		callback if callback
 
-	# Valida tipos
+
+
+# comprueba si es un objeto vacío
+isEmptyObj : (obj) ->
+	for key in obj
+		if hasOwnProperty.call(obj, key) then return false
+	true 
+
+# Property type validations
+valType =
 	
 	isString : (obj) ->
 		typeof obj is 'string'
@@ -35,73 +48,70 @@ val =
 	isArray : (obj) ->
 		Object.prototype.toString.call obj is '[object Array]'
 
-	chekatipo : (compara, aqui, cb) ->
-		switch compara
-			when String
-				aqui.type = 'string'
-				break
-			when Number
-				aqui.type = 'number'
-				break
-			when Boolean
-				aqui.type = 'boolean'
-				break
-			when Date
-				aqui.type = 'date'
-				break
-			when 'objectId'
-				aqui.type = 'objectId'
-				break
-			when null
-				aqui.type = 'free'
-				break
-			else cb()
+	isFree : -> true
 
-	# Primero compilamos el esquema
-	# Añade la validación de tipos al modelo
-	bake : (schema, ext) ->
-		x = ext or {}
-		for key of schema
-			obj = schema[key]
-			# si es null borramos el objeto
-			if obj is null
-				delete x[key] if x[key]?
-			else
-				x[key] ?= {}
-				chekatipo obj, x[key], ->
-					# si es un objeto
-					if typeof obj is 'object'
-						# si es un array
-						if obj.length isnt undefined
-							x[key].type = 'array'
-						# si es un objeto con type del ODM
-						else if obj.type?
-							x[key].required = obj.required if obj.required?
-							x[key].default = obj.default if obj.default?
-							x[key].max = obj.max if obj.max?
-							x[key].min = obj.min if obj.min?
-							x[key].autoInc = obj.autoInc if obj.autoInc?
-							x[key].limit = obj.limit if obj.limit?
-							x[key].unique = obj.unique if obj.unique?
 
-							if obj.default?
-								if typeof obj.default is 'function'
-									x[key].default = obj.default
-								else
-									x[key].default = () -> obj.default
-							chekatipo obj.type, x[key], ->
-								console.log 'error, no valid type'
-						# no tiene type
+checkType : (type, here, callback) ->
+	switch tipo
+		when String
+			here._type = valType.isString
+			break
+		when Number
+			here._type = valType.isNumber
+			break
+		when Boolean
+			here._type = valType.isBoolean
+			break
+		when Date
+			here._type = valType.isDate
+			break
+		when 'objectId'
+			here._type = valType.isObjectId
+			break
+		when ''
+			here._type = valType.isFree
+			break
+		else
+			callback()
+
+# generates validator
+bake : (schema, ext) ->
+	x = ext or {}
+	for key, obj of schema
+		x[key] ?= {}
+		checkType obj, x[key], ->
+			# si es un objeto o array
+			if typeof obj is 'object'
+				# si es un array
+				if obj.length isnt undefined
+					x[key]._type = valType.isArray
+				# si es un objeto con type del ODM
+				else if obj._type?
+					x[key]._required = obj._required if obj._required?
+					x[key]._default = obj._default if obj._default?
+					x[key]._max = obj._max if obj._max?
+					x[key]._min = obj._min if obj._min?
+					x[key]._autoInc = obj._autoInc if obj._autoInc?
+					x[key]._limit = obj._limit if obj._limit?
+					x[key]._unique = obj._unique if obj._unique?
+
+					if obj._default?
+						if typeof obj._default is 'function'
+							x[key]._default = obj._default
 						else
-							x[key].type = 'object'
-							# si tiene hijos
-							if emptyObj obj
-								x[key].childs = {}
-								x[key].childs[c] = bake obj[c] for c of obj
-					else
-						console.log 'error, no object valid'
-		# Return the object
-		x
+							x[key]._default = () -> obj._default
+					checkType obj._type, x[key], ->
+						console.log 'error, no valid type'
+				# no tiene type
+				else
+					x[key]._type = valType.isObject
+					# si tiene hijos
+					if not isEmptyObj obj
+						x[key][c] = bake obj[c] for c of obj
+			else
+				console.log 'error, no object valid'
+	# Return the object
+	x
 
 
 
