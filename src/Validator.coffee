@@ -1,9 +1,17 @@
+
 class Validator
 
 	constructor : (schema)->
-		schema = schema
+		validator = bake schema
+		@create validator
 
 	validate : (doc, callback) ->
+
+	create : (schema, callback) ->
+		for prop, value of newSchema
+			@[prop] = value
+		callback if callback
+		true
 
 	clean : (callback) ->
 		for prop, value of @
@@ -11,10 +19,8 @@ class Validator
 				delete @[prop]
 		callback
 
-	update : (newSchema, callback) ->
-		for prop, value of newSchema
-			@[prop] = value
-		callback if callback
+	update : (schema, callback) ->
+		@clean @create schema, callback
 
 
 
@@ -80,19 +86,14 @@ bake : (schema, ext) ->
 	for key, obj of schema
 		x[key] ?= {}
 		checkType obj, x[key], ->
-			# si es un objeto o array
+			# it is an object or array
 			if typeof obj is 'object'
-				# si es un array
+				# it is an array
 				if obj.length isnt undefined
 					x[key]._type = valType.isArray
-				# si es un objeto con type del ODM
+				# it is an objet with _type property
 				else if obj._type?
 					x[key]._required = obj._required if obj._required?
-					x[key]._default = obj._default if obj._default?
-					x[key]._max = obj._max if obj._max?
-					x[key]._min = obj._min if obj._min?
-					x[key]._autoInc = obj._autoInc if obj._autoInc?
-					x[key]._limit = obj._limit if obj._limit?
 					x[key]._unique = obj._unique if obj._unique?
 
 					if obj._default?
@@ -102,11 +103,12 @@ bake : (schema, ext) ->
 							x[key]._default = () -> obj._default
 					checkType obj._type, x[key], ->
 						console.log 'error, no valid type'
-				# no tiene type
+				# has not _type property, it is an object
 				else
 					x[key]._type = valType.isObject
-					# si tiene hijos
+					# if have childs
 					if not isEmptyObj obj
+						# recursive
 						x[key][c] = bake obj[c] for c of obj
 			else
 				console.log 'error, no object valid'
