@@ -16,7 +16,8 @@ deleteFolderRecursive = (path) ->
 describe 'Collection#Constructor', ->
 
 	it 'returns an Object', ->
-		col = new neodb.Collection()
+		db = new neodb()
+		col = db.addCollection 'Book'
 		expect( col ).to.be.an 'object'
 
 	it 'returns an object', ->

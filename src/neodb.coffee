@@ -26,6 +26,7 @@ class Neodb
 		if dbPath
 			datastore = new Datastore dbPath
 
+	_datastore: -> datastore
 
 	###*
 	 * Adds a collection into Database[`collectionName`]
@@ -39,38 +40,26 @@ class Neodb
 
 		if collectionName and (typeof collectionName is 'string')
 			
-			if not options
-				opts = {}
-			else if typeof options is 'function'
+			if typeof options is 'function'
 				callback = options
-				opts = {}
-			else if typeof options is 'object'
-				opts = options
+			opts = options || {}
 
-			opts.database = @
 			opts.inMemoryOnly = true if dbPath is false
 
 			if dbPath and not opts.inMemoryOnly
-				datastore.addCollection collectionName, (err, colData) ->
+				datastore.addCollection collectionName, (err, colData) =>
 					if not err
-						opts.colData = colData
-						return @[collectionName] = new Collection collectionName, @, opts, callback
+						opts.initData = colData
+						collection = new Collection collectionName, @, opts
+						if callback then callback null, collection else return collection
 			else
-				return @[collectionName] = new Collection collectionName, @, opts, callback
-		else if callback
-			callback 'collectionName not valid'			
+				collection = new Collection collectionName, @, opts
+				if callback then callback null, collection else return collection
+
+		else
+			if callback then callback 'collectionName not valid' else console.log 'collectionName not valid'
 
 	dropCollection : (collectionName, callback) ->
-
-	###*
-	 * set database folder path
-	 * @param {String} path relative route to database folder path
-	 * @return {String} relative path to database folder
-	###
-	setPath : (path) ->
-		if typeof path is 'string'
-			dbPath = path
-		else ''
 
 
 	###*

@@ -24,14 +24,15 @@ describe 'Database constructor', ->
 	it 'return an object with property dbPath = "./something"', ->
 		db = new neodb './something'
 		expect( db.getPath() ).to.equal './something'
+		deleteFolderRecursive './something'
 
 
 describe 'Database#addCollection', ->
 
-	it 'set this database as options.database', ->
-		db = new neodb.Database()
-		db.addCollection 'Books'
-		expect( db['Books'].getDb() ).to.equal db
+	it 'insert a collection in database', ->
+		db = new neodb()
+		db.addCollection 'Book'
+		expect( db['Book'].getDb() ).to.equal db
 
 	it 'overwrites options.inMemoryOnly if database is not persistant', ->
 		db = new neodb.Database()

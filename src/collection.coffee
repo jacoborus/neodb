@@ -17,57 +17,38 @@ genId = ->
 
 Doc = ->
 
-name = undefined
-database = undefined
-inMemoryOnly = true
+collectionName = ''
+db = undefined
+inMemoryOnly = false
 schema = false
-
 
 class Collection
 
 	###*
 	 * Collection constructor
-	 * @param  {String} name  					name of collection
+	 * @param  {String} collectionName			name of collection
 	 * @param  {Object} database 				database to insert this new collection into, if `null` Collection will be treated as an orphan, but it will have a virtual database for itself
 	 * @param  {Object} options 				Object with options
-	 * @param  {Object} options.schema			Schema for validation and relationships
 	 * @param  {Boolean} options.inMemoryOnly	if `true` collection is not persistant
+	 * @param  {Object} options.schema			Schema for validation and relationships
 	 * @param  {Object} options.initData 		data to initialize collection
 	 * @param  {Function} callback 				signature error, collectionItself
-	 *
-	 * A Collection has the next private properties:
-	 * - name
-	 * - database: parent db
-	 * - schema : for validations and relationships
-	 * - inMemoryOnly: true if not persistant
 	###
-	constructor: (name, database, options, callback ) ->
+	constructor: (name, database, options) ->
 		
-		name = name
-		database = database
-		schema = false
-		# set options and callback, even if options not passed as parameters
-		if typeof options is 'function'
-			callback = options
-			opts = {}
-		else opts = options or {}
+		collectionName = name
+		db = database
+		opts = options or {}
 
-		# set inMemoryOnly value if passed as option
-		if opts.inMemoryOnly? and typeof opts.inMemoryOnly is 'boolean'
-			inMemoryOnly = opts.inMemoryOnly
-		else
-			inMemoryOnly = true # default value
+		inMemoryOnly = opts.inMemoryOnly
 
 		# extend collection with initData
 		opts.initData ?= {}
 		for id, doc of opts.initData
 			@[id] = doc
 
-		# set database from options parameter, if database is not passed 
-		# will create a new one and add this collection into it
-		database[name] = @
-
 		Doc = Document @
+		db[collectionName] = @
 
 
 	Document : Doc
@@ -106,7 +87,7 @@ class Collection
 			if data.length is undefined
 				id = genId()
 				if not inMemoryOnly
-					datastore.insertDoc name, id, data, (err) ->
+					db._datastore().insertDoc collectionName, id, data, (err) ->
 						@[id] = data if not err
 						callback err if callback
 				else
@@ -201,7 +182,7 @@ class Collection
 							break if ok is false
 						
 						else
-							if typeof value is ('string' or 'number' or 'boolean')
+							if (typeof value is 'string') or (typeof value is 'number') or (typeof value is 'boolean')
 								ok = true if value is doc[prop]
 
 				if ok is true

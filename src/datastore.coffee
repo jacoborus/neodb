@@ -34,16 +34,21 @@ class datastore
 		col = {}
 		# check if folder exists
 		if fs.existsSync colPath
-			
-			addFile = (fileName)->
+			addFile = (fileName, callback) ->
+				console.log 'cargando archivos'
+				console.log 'cargando: ' + fileName
 				filePath = colPath + "/" + fileName
 				fs.readFile filePath, (err, data) ->
+					console.log JSON.parse data
 					throw err if err
-					col[fileName] = JSON.parse(data)
+					col[fileName] = JSON.parse data
+					callback()
 			
 			# read all files and then callback the collection object
 			async.each fs.readdirSync(colPath), addFile, (err) ->
-				callback null, col
+				console.log 'cargados todos los archivos'
+				console.log  col
+				callback null, col if callback
 				col
 
 		else
@@ -59,7 +64,10 @@ class datastore
 
 
 	insertDoc : (collection, id, doc, callback) ->
-		fs.writeFile dbPath + '/' + collection + '/' + id, doc, callback
+		console.log doc
+		route = @dbPath + '/' + collection + '/' + id
+		console.log route
+		fs.writeFile route, JSON.stringify(doc), callback
 
 
 	insertDocs : (docs, callback)->
