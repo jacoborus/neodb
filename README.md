@@ -25,6 +25,54 @@ npm install neodb
 
 ## Quick start
 
+**Coffeescript**
+
+```coffee
+# get dependency
+neodb = require 'neodb'
+
+# Create/add database passing db path as argument
+db = new neodb './mydb'
+
+# Create/add a collection
+db.addCollection 'Book'
+
+# Insert a document (this returns the document itself)
+db.Book.insert
+	title:'El Quijote'
+	author:'Cervantes'
+	year: 1605
+
+# Insert some documents (this returns an array of inserted documents)
+db.Book.insert [
+	title:'The Lord of the Rings'
+	author:'JRR Tolkien'
+	year: 1954
+,
+	title:'JavaScript: The Good Parts'
+	author:'Douglas Crockford'
+	year: 2008
+]
+
+# find a single document
+quijote = db.Book.findOne {title: 'El Quijote'}
+
+# edit it
+quijote.year = 2024
+
+# update it
+quijote.update (err, doc) ->
+	# do something async
+
+# find documents with mongodb query style
+db.Book.find {year: {$gt: 1900}}, (err, docs) ->
+	# docs is an array with Lord of rings and Javascript....
+	console.log docs
+```
+
+
+**Javascript**
+
 ```js
 // get dependency
 var neodb = require('neodb');
@@ -72,48 +120,6 @@ db.Book.find({year: {$gt: 1900}}, function (err, docs) {
 	console.log docs
 })
 ```
-
-
-```coffee
-# get dependency
-neodb = require 'neodb'
-# Create/add database passing db path as argument
-db = new neodb './mydb'
-# Create/add a collection
-db.addCollection 'Book'
-# Insert a document (this returns the document itself)
-db.Book.insert
-	title:'El Quijote'
-	author:'Cervantes'
-	year: 1605
-# Insert some documents (this returns an array of inserted documents)
-db.Book.insert [
-	title:'The Lord of the Rings'
-	author:'JRR Tolkien'
-	year: 1954
-,
-	title:'JavaScript: The Good Parts'
-	author:'Douglas Crockford'
-	year: 2008
-]
-
-# find a single document
-quijote = db.Book.findOne {title: 'El Quijote'}
-# edit it
-quijote.year = 2024
-# update it
-quijote.update (err, doc) ->
-	# do something async
-
-# find documents with mongodb query style
-db.Book.find {year: {$gt: 1900}}, (err, docs) ->
-	# docs is an array with Lord of rings and Javascript....
-	console.log docs
-```
-
-
-
-
 
 
 ## Guide
