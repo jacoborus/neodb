@@ -1,13 +1,13 @@
 ###
-Database
+Neodb
 ========
 
 Database explanation
 .....
 ###
 
-Datastore = require './Datastore'
-Collection = require './Collection'
+Datastore = require './datastore'
+Collection = require './collection'
 
 # private variables
 dbPath = false
@@ -54,9 +54,9 @@ class Neodb
 				datastore.addCollection collectionName, (err, colData) ->
 					if not err
 						opts.colData = colData
-						@[collectionName] = new Collection collectionName, @, opts, callback
+						return @[collectionName] = new Collection collectionName, @, opts, callback
 			else
-				@[collectionName] = new Collection collectionName, @, opts, callback
+				return @[collectionName] = new Collection collectionName, @, opts, callback
 		else if callback
 			callback 'collectionName not valid'			
 

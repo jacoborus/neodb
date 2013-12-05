@@ -16,13 +16,13 @@ deleteFolderRecursive = (path) ->
 describe 'Database constructor', ->
 
 	it 'return an object', ->
-		db = new neodb.Database()
+		db = new neodb()
 		expect( db ).to.be.a 'object'
-	it 'return an object with private property dbPath "" by default', ->
-		db = new neodb.Database()
-		expect( db.getPath() ).to.equal ''
+	it 'return an object with private property dbPath false by default', ->
+		db = new neodb()
+		expect( db.getPath() ).to.equal false
 	it 'return an object with property dbPath = "./something"', ->
-		db = new neodb.Database './something'
+		db = new neodb './something'
 		expect( db.getPath() ).to.equal './something'
 
 

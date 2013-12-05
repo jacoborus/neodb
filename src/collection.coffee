@@ -2,26 +2,25 @@
  * Collection
  * ==========
  * 
- * Collection uses a nedb dabase to store documents
+ * Collection is an natural javascript object with documents
  * 
 ###
 
 util = require 'util'
+Document = require './document'
+
 genId = ->
 	'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
 		r = Math.random()*16|0
 		v = if c is 'x' then r else (r&0x3|0x8)
 		v.toString 16
 
-
-Document = require './Document'
 Doc = ->
 
 name = undefined
 database = undefined
 inMemoryOnly = true
 schema = false
-
 
 
 class Collection
@@ -286,5 +285,5 @@ class Collection
 	clean : (callback) ->
 
 
-module.exports = _export
+module.exports = Collection
 
