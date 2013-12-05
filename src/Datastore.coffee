@@ -17,12 +17,15 @@ deleteFolderRecursive = (path) ->
 class datastore
 
 	constructor : (@dbPath = __dirname + './neodb') ->
+		if not fs.existsSync @dbPath
+			fs.mkdir @dbPath
+
 
 
 	###*
 	 * Create folder for collection if not exists
 	 * @param  {String}   name     name of collection
-	 * @param  {Function} callback signature: error
+	 * @param  {Function} callback signature: error, collectionData
 	 * @return {Object}            Collection data
 	###
 
@@ -55,11 +58,8 @@ class datastore
 	cleanCollection : (name, callback) ->
 
 
-	insertDoc : (doc, callback) ->
-		fs.writeFile(filename, data, [options], callback)
-		fs.readFile '/path/to/some/file.txt', (err, data) ->
-			throw err if err
-			console.log data
+	insertDoc : (collection, id, doc, callback) ->
+		fs.writeFile dbPath + '/' + collection + '/' + id, doc, callback
 
 
 	insertDocs : (docs, callback)->

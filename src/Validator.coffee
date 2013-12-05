@@ -1,4 +1,13 @@
 
+
+# middleware and validation steps:
+# 
+# - init
+# - clean
+# - fill default fields if needed
+# - 
+
+
 class Validator
 
 	constructor : (schema)->
