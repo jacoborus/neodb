@@ -36,28 +36,29 @@ class Collection
 	###
 	constructor: (name, database, options) ->
 		
+		# set private properties
 		collectionName = name
 		db = database
 		opts = options or {}
-
-		inMemoryOnly = opts.inMemoryOnly
+		inMemoryOnly = opts.inMemoryOnly if opts.inMemoryOnly
 
 		# extend collection with initData
 		opts.initData ?= {}
 		for id, doc of opts.initData
 			@[id] = doc
 
+		# create document model
 		Doc = Document @
+		# add collection to database
 		db[collectionName] = @
 
-
-	Document : Doc
+	# returns document model
+	Document : (-> Doc)()
 
 
 	# Only for testing purposes
 	getDb : -> database
 	getInMemoryOnly : -> inMemoryOnly
-	getSchema : -> schema
 
 
 	###*
@@ -67,41 +68,53 @@ class Collection
 	 * @return {Object} processed schema after extend the old one
 	###
 
-	setSchema : ->
+	setSchema : (newSchema, callback) ->
+		if typeof newSchema is 'object'
+			schema = newSchema
+			if callback then callback null, schema else schema
+		else
+			if callback then callback 'not valid schema' else false
 
-	getSchema : ->
+
+	# returns actual schema
+	getSchema : (-> schema)()
 
 	updateSchema : ->
 
 
 	###*
 	 * Insert new document/s in collection
-	 * @param  {Object||Array}   docs     document/s to be stored
-	 * @param  {Function} callback signature: error, insertedDocuments
-	 * @return {Object}            inserted document
+	 * @param  {Object||Array}   	docs     document/s to be stored
+	 * @param  {Function} callback 	signature: error, insertedDocumentsIds
+	 * @return {Array}            	list of inserted document ids
 	###
 
 	insert : (data, callback) ->
 		if typeof data is 'object'
-			# save one document
+			# insert one document
 			if data.length is undefined
 				id = genId()
-				if not inMemoryOnly
-					db._datastore().insertDoc collectionName, id, data, (err) ->
-						@[id] = data if not err
-						callback err if callback
-				else
+				if inMemoryOnly
 					@[id] = data
+					if callback then callback null, [id] else [id]
+				else
+					db._datastore().insertDoc collectionName, id, data, (err) ->
+						if err
+							if callback then callback err else []
+						else
+							@[id] = data
+							if callback then callback null, [id] else [id]
 
-				doc = new Doc @[id]
-				callback null, doc if callback
-				doc
-			# save multiple documents
+			# insert multiple documents
 			else if typeof data.length is 'number'
-				ids = []
-				for i in data
-					ids[i] = genId()
-					@[ids[i]] = data[i]
+				if inMemoryOnly
+					ids = []
+					for i in data
+						ids[i] = genId()
+						@[ids[i]] = data[i]
+					if callback then callback null, ids else ids
+				else
+					
 				docs = @findByIds ids
 				callback null, docs if callback
 				docs
@@ -118,18 +131,13 @@ class Collection
 		if typeof id is 'string'
 			if @[id]
 				doc = new Doc @[id]
-				callback null, doc if callback
-				doc
-			else
-				callback null, {} if callback
-				{}
-		else
-			callback 'not valid identifier' if callback
-			{}
+				if callback then callback null, doc else doc
+			else if callback then callback 'document not found' else null
+		else if callback then callback 'not valid identifier' else null
 
 
 	###*
-	 * Update a document by identifier
+	 * Clean a document by identifier and sets its new data
 	 * @param {String}   id       id of object to update
 	 * @param {Object}   newDoc   new fields for document
 	 * @param {Function} callback signature: error, newDoc
@@ -142,11 +150,9 @@ class Collection
 				if typeof value isnt 'function'
 					@[id][prop] = value
 			doc = new Doc @[id]
-			callback null, doc if callback;
-			doc
+			if callback then callback null, doc else doc
 		else
-			callback 'Document not found' if callback
-			false
+			if callback then callback 'Document not found' else null
 
 
 	###*

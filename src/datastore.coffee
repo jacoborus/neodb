@@ -23,7 +23,7 @@ class datastore
 
 
 	###*
-	 * Create folder for collection if not exists
+	 * Load selected folder (collection) or create one if not exists
 	 * @param  {String}   name     name of collection
 	 * @param  {Function} callback signature: error, collectionData
 	 * @return {Object}            Collection data
@@ -31,42 +31,48 @@ class datastore
 
 	addCollection : (name, callback) ->
 		colPath = @dbPath + '/' + name
-		col = {}
 		# check if folder exists
 		if fs.existsSync colPath
-			addFile = (fileName, callback) ->
-				console.log 'cargando archivos'
-				console.log 'cargando: ' + fileName
+			col = {}
+			# iteration. Load files
+			addFile = (fileName, next) ->
 				filePath = colPath + "/" + fileName
 				fs.readFile filePath, (err, data) ->
-					console.log JSON.parse data
 					throw err if err
 					col[fileName] = JSON.parse data
-					callback()
+					next()
 			
 			# read all files and then callback the collection object
 			async.each fs.readdirSync(colPath), addFile, (err) ->
-				console.log 'cargados todos los archivos'
-				console.log  col
 				callback null, col if callback
 				col
-
+		# create folder if not exists
 		else
 			fs.mkdir colPath, (err) ->
 				callback err, {} if callback
 				{}
 
+	###*
+	 * Remove collection and documents (folder and files)
+	 * @param  {String}   collectionName name of collection to remove
+	 * @param  {Function} callback       signature: numRemovedDocs
+	 * @return {Number}                  num of removed documents
+	###
 	removeCollection : (collectionName, callback) ->
-		deleteFolderRecursive @dbPath + '/' + collectionName
-
+		if fs.existSync @dbPath + '/' + collectionName
+			total = 0
+			fs.readdirSync(path).forEach (file,index) ->
+				curPath = path + "/" + file
+				total++
+				fs.unlinkSync curPath
+			fs.rmdirSync path
+			if total then callback total else total
 
 	cleanCollection : (name, callback) ->
 
 
 	insertDoc : (collection, id, doc, callback) ->
-		console.log doc
 		route = @dbPath + '/' + collection + '/' + id
-		console.log route
 		fs.writeFile route, JSON.stringify(doc), callback
 
 
