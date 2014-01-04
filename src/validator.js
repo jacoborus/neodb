@@ -1,44 +1,25 @@
 
-var Validator, valType;
+var Validator, isEmptyObj, valType, checkType, bake;
+
+// private variables
+var validator;
 
 Validator = function (schema) {
-	var validator;
-	validator = bake(schema);
-	this.create(validator);
+	validator = bake( schema );
 }
 
-Validator.prototype.validate = function(doc, callback) {};
-
-Validator.prototype.create = function(schema, callback) {
-	var prop, value;
-	for (prop in newSchema) {
-		value = newSchema[prop];
-		this[prop] = value;
-	}
-	if (callback) {
-		callback;
-	}
-	return true;
-};
-
-Validator.prototype.clean = function(callback) {
-	var prop, value;
-	for (prop in this) {
-		value = this[prop];
-		if (typeof value !== 'function') {
-			delete this[prop];
-		}
-	}
-	return callback;
-};
-
-Validator.prototype.update = function(schema, callback) {
-	return this.clean(this.create(schema, callback));
+Validator.prototype.validate = function (card, callback) {
+	validator(card, callback);
 };
 
 
+Validator.prototype.update = function (schema) {
+	validator = bake( schema );
+}
 
-isEmptyObj: function(obj) {
+
+// private methods
+isEmptyObj =  function(obj) {
 	var key, _i, _len;
 	for (_i = 0, _len = obj.length; _i < _len; _i++) {
 		key = obj[_i];
@@ -148,6 +129,6 @@ bake = function(schema, ext) {
 		});
 	}
 	return x;
-}
+};
 
 module.exports = Validator;

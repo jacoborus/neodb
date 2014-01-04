@@ -1,49 +1,144 @@
+// private methods
+var msgErr, validate, save, Store, store, series, genId, layers;
 
-var async, collection, middleware, pres;
+layers = {
+	init : function (card, next) { next(); },
+	presave : function (card, next) { next(); },
+	postsave : function (card, next) { next(); },
+	preremove : function (card, next) { next(); },
+	postremove : function (card, next) { next(); },
+}
+validate = function (card, next) { next(); };
 
-async = require('async');
+Store = require( './datastore' );
 
-pres = {
-	save: function(next) {},
-	remove: function(next) {}
-};
-
-collection = '';
-
-
-middleware = function (collectionOwner) {
-	collection = collectionOwner;
+msgErr = function ( msg ) {
+	this.msg = msg;
+	this.name = "Error";
 }
 
-middleware.prototype.setInit = function(initFn) {
-	return this.init = initFn;
-};
 
-middleware.prototype.save = function() {
-	if (callback) {
-		return async.series([init, clean, validate, presave, proceed, post], callback);
+// Very custom async series function
+series = function (fns, data, callback) {
+
+	var iterate, len, cursor,
+		data = data;
+
+	len = fns.length;
+	cursor = 0;
+	
+	iterate = function (err) {
+		if (err) {
+			return callback( err );
+		} else {
+			if (cursor === len-1) {
+				callback( null, data );
+			} else {
+				cursor++;
+				fns[cursor]( data, iterate );
+			}
+		}
 	}
-};
+	fns[cursor]( data, iterate );
+}
 
-middleware.prototype.remove = function() {
-	if (callback) {
-		return async.series([pre, proceed, post], callback);
+// Very custom async each series function
+eachSeries = function ( arr, fns, callback) {
+
+	var iterate, len, cursor,
+		arr = arr;
+
+	len = arr.length;
+	cursor = 0;
+	
+	iterate = function (err) {
+		if (err) {
+			return callback( err );
+		} else {
+			if (cursor === len-1) {
+				return callback( null, arr );
+			} else {
+				cursor++;
+				series( fns, arr[cursor], iterate );
+			}
+		}
 	}
+	series( fns, arr[cursor], iterate );
+}
+
+genId = function() {
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function( c ){
+		var r, v;
+		r = Math.random() * 16 | 0;
+		v = c === 'x' ? r : r & 0x3 | 0x8;
+		return v.toString(16);
+	});
 };
 
-middleware.prototype.clean = function() {};
 
-middleware.prototype.validate = function() {};
+// private properties
 
-middleware.prototype.proceedSave = function() {};
 
-middleware.prototype.init = function(doc, next) {
-	return next();
+/**
+ * Middleware constructor
+ * @param {String} drawerOwner name of drawer container
+ */
+
+var Middleware = function (path, data) {
+	store = new Store( path, data );
+}
+
+
+/**
+ * Set middleware layer function
+ * @param {String}   name layer name
+ * @param {Function} fn   middleware layer function
+ */
+
+Middleware.prototype.set = function (name, fn) {
+	if (name === ('init' || 'presave' || 'postsave' || 'preremove' || 'postremove') && typeof fn === 'function') {
+		layer[name] = fn;
+	} else {
+		throw new msgErr( "Incorrect Middleware layer name or function" );
+	};
 };
 
-middleware.prototype.pre = function() {};
 
-middleware.prototype.post = function() {};
+Middleware.prototype.save = function (data, callback) {
+	var result = [];
+	if (typeof data !== 'number') {
+		var data = [data];
+	} else {
+		var data = data;
+	}
+	for (i in data) {
+		if (!data[i]._id) {
+			data[i]._id = genId();
+			data[i]._isNew = true;
+			result.push( data[i] );
+		}
+	}
+	eachSeries(
+		result,
+		[layers.init, validate, layers.presave, store.save, layers.postsave],
+		callback
+	);
+};
 
-module.exports = middleware;
 
+Middleware.prototype.remove = function (ids, callback) {
+	if (typeof ids !== 'number') {
+		data = [ids];
+	} else {
+		data = ids
+	}
+	eachSeries(
+		series,
+		data,
+		[layers.preremove, store.remove, layers.postremove],
+		callback
+	);
+};
+
+
+module.exports = Middleware;

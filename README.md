@@ -152,31 +152,66 @@ The permitted SchemaTypes are
 
 ## API docs
 
-- Database
-	- constructor
-	- addCollection
-	- clean
+- NeoDB
+	- constructor(path)
+	- open(drawerName, options, callback)
+	- close(drawerName)
+	- clean(drawerName)
+	- Drawer class
 
-- Collection
+- Drawer
 	- constructor
-	- addSchema
-	- insert
-	- find
-	- findOne
-	- findById
-	- update
-	- remove
-	- removeById
-	- clean
+	- async methods
+		- insert
+		- search
+		- searchById
+		- searchOne
+		- update
+		- remove
+		- removeById
+		- clean
+	- sync methods
+		- set
+		- find
+		- findById
+		- findOne
 
-- Document
+
+		- addTemplate
+
+- Card
 	- constructor
-	- insert
-	- remove
-	- update
+	- _insert(callback)
+	- _remove(callback)
+	- _update(callback)
 
-- Schema
-	-
+- Template
+	- _update(newTemplate)
+	- _set(newTemplate)
+
+- Validator
+	- validate(object)
+	- update(template)
+
+- Query
+	- comparator
+	- operator
+
+- Middleware
+	- set(step, fn)
+
+- CabStore
+	- openDrawer(name, callback)
+	- removeDrawer(name, callback)
+	- cleanDrawer(name, callback)
+
+- DrawerStore
+	- insertCard
+	- insertCards
+	- updateCard
+	- updateCards
+	- removeCard
+	- removeCards
 
 
 ## Running Tests

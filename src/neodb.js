@@ -6,104 +6,96 @@ Neodb
 Database explanation
 .....
 */
+var Store = require( './dbstore' ),
+	Drawer = require( './drawer' );
 
-var Collection, Datastore, Neodb, datastore, dbPath;
+var msgErr = function( msg ) {
+   this.msg = msg;
+   this.name = "Error";
+}
 
-Datastore = require('./datastore');
-Collection = require('./collection');
 // private variables
-dbPath = false;
-datastore = false;
-
+var path = false,
+	store = false;
 
 /**
 	 * Create and/or connect a database
 	 * @param  {String||Boolean} path   by default `false`, indicates the folder to save the database
 	 * If no `path` database is non persistant
 */
-
-var Neodb = function (path) {}
-	if (path == null) {
-		path = false;
+var Neodb = function (dbPath) {
+	path = dbPath || false;
+	if (path) {
+		store = new Store( path );
 	}
-	dbPath = path;
-	if (dbPath) {
-		datastore = new Datastore(dbPath);
-	}
+	this.drawers = {};
 };
 
 
-_datastore = function() {
-	return datastore;
+Neodb.prototype.getPath = function () {
+	return path;
 };
 /**
-	 * Adds a collection into Database[`collectionName`]
-	 * @param {String} collectionName       name of collection will be inserted as `database[collectionName]`
+	 * Adds a collection into Database[`name`]
+	 * @param {String} name       name of drawer will be inserted as `database[name]`
 	 * @param {Object} [options]
-	 * @param {Object} [options.Schema]     schema for validation and relationships
-	 * @param {Boolean} [options.inMemoryOnly]  indicator of non persitant collection
-	 * @param {Function} [callback]         signature: error, insertedDocument
+	 * @param {Object} [options.template]     schema for validation and relationships
+	 * @param {Boolean} [options.memOnly]  indicator of non persitant drawer
+	 * @param {Function} [callback]         signature: error, insertedCard
 */
-
-Neodb.prototype.addCollection = function( collectionName, options, callback ){
-	var collection, opts,
+Neodb.prototype.open = function (name, options, callback) {
+	var opts,
 		_this = this;
-	if (collectionName && (typeof collectionName === 'string')) {
+	if (name && (typeof name === 'string')) {
+
+		// if no options
 		if (typeof options === 'function') {
 			callback = options;
 		}
 		opts = options || {};
-		if (dbPath === false) {
-			opts.inMemoryOnly = true;
+
+		// force in memory only drawer if cabinet is in memory only
+		if (path === false) {
+			opts.memOnly = true;
 		}
-		if (dbPath && !opts.inMemoryOnly) {
-			return datastore.addCollection(collectionName, function(err, colData) {
-				var collection;
+
+		// add drawer to cabinet
+		if (path && !opts.memOnly) {
+			// if drawer is persistant read folder
+			store.open( name, opts.memOnly, function (err, data) {
 				if (!err) {
-					opts.initData = colData;
-					collection = new Collection(collectionName, _this, opts);
+					opts.initData = data;
+					// create drawer and add it to the cabinet
+					_this.drawers[name] = new Drawer( path + '/' + name, opts );
 					if (callback) {
-						return callback(null, collection);
-					} else {
-						return collection;
+						return callback( null, _this.drawers[name] );
 					}
+				} else {
+					callback( err );
 				}
 			});
 		} else {
-			collection = new Collection(collectionName, this, opts);
+			// just create a drawer and add it to the cabinet if in memory only drawer 
+			drawers[name] = new Drawer( name, opts );
 			if (callback) {
-				return callback(null, collection);
-			} else {
-				return collection;
+				return callback( null, drawers[name] );
 			}
 		}
-	} else {
-		if (callback) {
-			return callback('collectionName not valid');
-		} else {
-			return console.log('collectionName not valid');
-		}
+	} else if (callback) {
+		return callback( 'collectionName not valid' );
 	}
 };
 
-Neodb.prototype.dropCollection = function( collectionName, callback ){};
-/**
-	 * @return {String} path to database folder
-*/
+Neodb.prototype.close = function (collectionName) {};
 
-Neodb.prototype.getPath = function() {
-	return dbPath;
-};
 /**
 	 * Remove all documents of all collections in database
 	 * @param  {Function} [callback]  async callback
 	 * @return {Number}               number of documents removed
 */
 
-Neodb.prototype.clean = function(callback) {};
+Neodb.prototype.clean = function (callback) {};
 
 
 
-module.exports = (function() {
-	return Neodb;
-})();
+module.exports = Neodb;
