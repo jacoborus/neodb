@@ -5,35 +5,44 @@ Template
 
 // private methods
 /**
-	 * Create a new Template and set it as `drawer`.template
-	 * @param  {Object} templateModel model structure
-	 * @return {Object}              resultant template of drawer after extend the old one
+ * Create a new Template and set it as `drawer`.template
+ * @param  {Object} templateModel model structure
 */
 var update = function (newTemplate, callback) {
 	var prop, value;
 	for (prop in newTemplate) {
-		this[prop] = newTemplate[prop];
+		template[prop] = newTemplate[prop];
 	}
-	validator = Validator( _this );
+
 };
 
+// private properties
+var template = {};
 
 module.exports = {
+
+	/**
+	 * Get schema
+	 * @return {Object} drawer schema
+	 */
 	get: function() {
 		var result = {},
 			prop;
-		for (prop in this._template) {
-			result[prop] = template[prop];
+		for (prop in template) {
+			if (prop !== '_update') {
+				result[prop] = template[prop];
+			}
 		}
 		delete result._update;
 		return result;
 	},
+
+	/**
+	 * Set new template
+	 * @param {Object} val new template
+	 */
 	set: function (val) {
-		validator = Validator( val );
-
-		_this = this;
 		val._update = update;
-
-		this._template = val;
+		template = val;
 	}
 }

@@ -101,6 +101,7 @@ Drawer.prototype.insert = function (data, callback) {
  * @param  {Function} callback signature: error, resultcard
  * @return {Object}            resultcard
 */
+
 Drawer.prototype.get = function( id, callback ){
 	var card;
 	if (typeof id === 'string') {
@@ -113,16 +114,14 @@ Drawer.prototype.get = function( id, callback ){
 	}
 };
 
-/************************************/
-/************************************//************************************/
-/************************************/
 
 /**
-	 * Clean a card by identifier and sets its new data
-	 * @param {String}   id       id of object to update
-	 * @param {Object}   newDoc   new fields for card
-	 * @param {Function} callback signature: error, newCard
+ * Clean a card by identifier and sets its new data
+ * @param {String}   id       id of object to update
+ * @param {Object}   newDoc   new fields for card
+ * @param {Function} callback signature: error, newCard
 */
+
 Drawer.prototype.set = function (id, newCard, callback) {
 	var card, prop, value;
 	if (this[id]) {
@@ -139,10 +138,10 @@ Drawer.prototype.set = function (id, newCard, callback) {
 };
 
 /**
-	 * Find cards in drawer
-	 * @param  {Object}   query    nedb query object
-	 * @param  {Function} callback signature: err, doc/s
-	 * @return {Object||Array}            doc/docs
+ * Find cards in drawer
+ * @param  {Object}   query    nedb query object
+ * @param  {Function} callback signature: err, doc/s
+ * @return {Object||Array}            doc/docs
 */
 Drawer.prototype.find = function(query, callback) {
 	var dev, doc, id, key, ok, prop, queryOn, result, value, _ref;
@@ -152,18 +151,18 @@ Drawer.prototype.find = function(query, callback) {
 		queryOn = true;
 		break;
 	}
+	// if not query return all cards
 	if ((query === false) || (queryOn === false)) {
 		if (callback) {
-			callback(null, this);
+			callback( null, drawer );
 		}
-		return this;
 	} else if (typeof query !== 'object') {
-		callback('Bad query');
+		callback( 'Bad query' );
 	} else {
 		result = [];
-		for (id in this) {
-			doc = this[id];
-			if (typeof doc == 'function') {
+		for (id in drawer) {
+			card = drawer[id];
+			if (typeof card == 'function') {
 				continue;
 			}
 			ok = false;
@@ -173,7 +172,7 @@ Drawer.prototype.find = function(query, callback) {
 					if (typeof value === 'object') {
 						for (key in value) {
 							if (value.hasOwnProperty(key)) {
-								if (compare[key]( value[key], doc[prop] )) {
+								if (compare[key]( value[key], card[prop] )) {
 									ok = true;
 								}
 								break;
@@ -184,7 +183,7 @@ Drawer.prototype.find = function(query, callback) {
 						}
 					} else {
 						if (typeof value === ('string' || 'number' || 'boolean')) {
-							if (value === doc[prop]) {
+							if (value === card[prop]) {
 								ok = true;
 							}
 						}
@@ -199,21 +198,20 @@ Drawer.prototype.find = function(query, callback) {
 					dev[prop] = this[id][prop];
 				}
 				dev._id = id;
-				result.push(new Doc(dev));
+				result.push( new this.Card( dev ));
 			}
 		}
 		if (callback) {
-			callback(null, result);
+			return callback( null, result );
 		}
-		return result;
 	}
 };
 
 /**
-	 * Return the first card of a search
-	 * @param  {Object}   query    a nedb query formatted
-	 * @param  {Function} callback signature: error, resultcard
-	 * @return {Object}            resultcard
+ * Return the first card of a search
+ * @param  {Object}   query    a nedb query formatted
+ * @param  {Function} callback signature: error, resultcard
+ * @return {Object}            resultcard
 */
 
 
@@ -231,22 +229,22 @@ Drawer.prototype.findOne = function( query, callback ){
 };
 
 /**
-	 * Update cards that match into query with update data
-	 * @param  {Object}   query    nedb query formatted query
-	 * @param  {Object}   update   data to update matched cards
-	 * @param  {Boolean}   multi  allows the modification of several cards
-	 * @param  {Function} callback signature: err, numReplaced
-	 * @return {Object||Array}            updated card
+ * Update cards that match into query with update data
+ * @param  {Object}   query    nedb query formatted query
+ * @param  {Object}   update   data to update matched cards
+ * @param  {Boolean}   multi  allows the modification of several cards
+ * @param  {Function} callback signature: err, numReplaced
+ * @return {Object||Array}            updated card
 */
 Drawer.prototype.update = function( query, update, callback ){
 	this.find( query, function( err, docs ){} );
 };
 
 /**
-	 * Remove card from drawer
-	 * @param  {Object}   query    nedb query formatted query
-	 * @param  {Function} callback signature: err, numRemoved
-	 * @return {Number}            numRemoved
+ * Remove card from drawer
+ * @param  {Object}   query    nedb query formatted query
+ * @param  {Function} callback signature: err, numRemoved
+ * @return {Number}            numRemoved
 */
 
 
@@ -264,10 +262,10 @@ Drawer.prototype.remove = function( query, callback ){
 };
 
 /**
-	 * Remove card by id from drawer
-	 * @param  {String}   id       id of target doc
-	 * @param  {Function} callback signature: error, removedcardId
-	 * @return {String}            removed card id
+ * Remove card by id from drawer
+ * @param  {String}   id       id of target doc
+ * @param  {Function} callback signature: error, removedcardId
+ * @return {String}            removed card id
 */
 Drawer.prototype.removeById = function(id, callback) {
 	if (typeof id === 'string' && this[id]) {
@@ -285,9 +283,9 @@ Drawer.prototype.removeById = function(id, callback) {
 };
 
 /**
-	 * Remove all cards of drawer
-	 * @param  {Function} callback numRemoved
-	 * @return {Number}            numRemoved
+ * Remove all cards of drawer
+ * @param  {Function} callback numRemoved
+ * @return {Number}            numRemoved
 */
 
 

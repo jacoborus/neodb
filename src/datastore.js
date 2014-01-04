@@ -6,7 +6,7 @@ var fs = require('fs'),
 
 // private properties
 var path = false,
-	cards;
+	Cards;
 
 
 /**
@@ -17,6 +17,13 @@ var store = function ( drawerPath, data ) {
 	path = drawerPath || false;
 	Cards = data;
 }
+
+
+/**
+ * save card in drawer, and in file too if persistant
+ * @param  {Object}   card 
+ * @param  {Function} cb   signature: err
+ */
 
 store.prototype.save = function (card, cb) {
 	var id = card._id;
@@ -45,6 +52,12 @@ store.prototype.save = function (card, cb) {
 	}
 };
 
+
+/**
+ * Remove file and card from drawer
+ * @param  {String}   id 
+ * @param  {Function} cb signature: err
+ */
 
 store.prototype.remove = function (id, cb) {
 

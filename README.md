@@ -4,9 +4,9 @@ neodb
 
 **NOT READY FOR USE**
 
-NeoDB is an experimental database for node.js projects, it's written in coffeescript/javascript. This database is not intended for high concurrency input data tasks or large storage projects, but fits perfect with typical blogs and portfolios.
+NeoDB is an experimental database for node.js projects, it's written in javascript. This database is not intended for high concurrency input data tasks or large storage projects, but fits perfect with typical blogs and portfolios.
 
-NeoDB saves database and collections in folders, and its documents in json files named as their ids.
+NeoDB saves database and drawers in folders, and its documents/cards in json files named as their ids.
 
 ## Main features
 
@@ -14,7 +14,6 @@ NeoDB saves database and collections in folders, and its documents in json files
 - Only-in-memory or persistant collections
 - Object document modeling aka schemas
 - MongoDB query style
-
 
 
 ## Installation
@@ -34,17 +33,17 @@ neodb = require 'neodb'
 # Create/add database passing db path as argument
 db = new neodb './mydb'
 
-# Create/add a collection
-db.addCollection 'Book'
+# Create/add a drawer
+db.open 'Books'
 
-# Insert a document (this returns the document itself)
-db.Book.insert
+# Insert a card
+db.Books.insert
 	title:'El Quijote'
 	author:'Cervantes'
 	year: 1605
 
-# Insert some documents (this returns an array of inserted documents)
-db.Book.insert [
+# Insert some documents
+db.Books.insert [
 	title:'The Lord of the Rings'
 	author:'JRR Tolkien'
 	year: 1954
@@ -55,17 +54,21 @@ db.Book.insert [
 ]
 
 # find a single document
-quijote = db.Book.findOne {title: 'El Quijote'}
+quijote = {}
+
+db.Books.findOne {title: 'El Quijote'}, (err, card) ->
+	# do something with card
+	quijote = card
 
 # edit it
 quijote.year = 2024
 
 # update it
-quijote.update (err, doc) ->
+quijote._update (err, doc) ->
 	# do something async
 
 # find documents with mongodb query style
-db.Book.find {year: {$gt: 1900}}, (err, docs) ->
+db.Books.find {year: {$gt: 1900}}, (err, docs) ->
 	# docs is an array with Lord of rings and Javascript....
 	console.log docs
 ```
@@ -81,16 +84,17 @@ var neodb = require('neodb');
 var db = new neodb('./mydb');
 
 // Create/add a collection
-db.addCollection('Book');
+db.open('Books');
 
 // Insert a document (this returns the document itself)
-db.Book.insert({
+db.Books.insert({
 	title:'El Quijote',
 	author:'Cervantes',
 	year: 1605
 });
+
 // Insert some documents (this returns an array of inserted documents)
-db.Book.insert([
+db.Books.insert([
 	{
 		title:'The Lord of the Rings'
 		author:'JRR Tolkien'
@@ -104,18 +108,21 @@ db.Book.insert([
 ]);
 
 // find a single document
-var quijote = db.Book.findOne({title: 'El Quijote'});
+var quijote = {};
+db.Book.findOne({title: 'El Quijote'}, function(err, doc){
+	quijote = doc;
+});
 
 // edit it
 quijote.year = 2024;
 
 // update it
-quijote.update( function (err, doc) {
+quijote._update( function (err, doc) {
 	// do something async
 }
 
 // find documents with mongodb query style
-db.Book.find({year: {$gt: 1900}}, function (err, docs) {
+db.Books.find({year: {$gt: 1900}}, function (err, docs) {
 	// docs is an array with Lord of rings and Javascript....
 	console.log docs
 })
@@ -124,9 +131,9 @@ db.Book.find({year: {$gt: 1900}}, function (err, docs) {
 
 ## Guide
 
-### DataBase
-### Collection
-### Document
+### Cabinet
+### Drawer
+### Card
 ### Schema
 
 Schema defines the shape, validation, relationships and behaviour of each collection and its documents.

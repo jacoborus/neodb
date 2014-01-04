@@ -21,49 +21,51 @@ msgErr = function ( msg ) {
 // Very custom async series function
 series = function (fns, data, callback) {
 
-	var iterate, len, cursor,
+	var iterate, len, cur,
 		data = data;
 
 	len = fns.length;
-	cursor = 0;
+	// pointer
+	cur = 0;
 	
 	iterate = function (err) {
 		if (err) {
 			return callback( err );
 		} else {
-			if (cursor === len-1) {
+			if (cur === len-1) {
 				callback( null, data );
 			} else {
-				cursor++;
-				fns[cursor]( data, iterate );
+				cur++;
+				fns[cur]( data, iterate );
 			}
 		}
 	}
-	fns[cursor]( data, iterate );
+	fns[cur]( data, iterate );
 }
 
 // Very custom async each series function
 eachSeries = function ( arr, fns, callback) {
 
-	var iterate, len, cursor,
+	var iterate, len, cur,
 		arr = arr;
 
 	len = arr.length;
-	cursor = 0;
+	// pointer
+	cur = 0;
 	
 	iterate = function (err) {
 		if (err) {
 			return callback( err );
 		} else {
-			if (cursor === len-1) {
+			if (cur === len-1) {
 				return callback( null, arr );
 			} else {
-				cursor++;
-				series( fns, arr[cursor], iterate );
+				cur++;
+				series( fns, arr[cur], iterate );
 			}
 		}
 	}
-	series( fns, arr[cursor], iterate );
+	series( fns, arr[cur], iterate );
 }
 
 genId = function() {

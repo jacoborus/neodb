@@ -23,6 +23,7 @@ var path = false,
 	 * @param  {String||Boolean} path   by default `false`, indicates the folder to save the database
 	 * If no `path` database is non persistant
 */
+
 var Neodb = function (dbPath) {
 	path = dbPath || false;
 	if (path) {
@@ -32,9 +33,14 @@ var Neodb = function (dbPath) {
 };
 
 
-Neodb.prototype.getPath = function () {
-	return path;
-};
+/**
+ * return path to database
+ * @return {String} 
+ */
+
+Neodb.prototype.getPath = function () { return path; };
+
+
 /**
 	 * Adds a collection into Database[`name`]
 	 * @param {String} name       name of drawer will be inserted as `database[name]`
@@ -43,6 +49,7 @@ Neodb.prototype.getPath = function () {
 	 * @param {Boolean} [options.memOnly]  indicator of non persitant drawer
 	 * @param {Function} [callback]         signature: error, insertedCard
 */
+
 Neodb.prototype.open = function (name, options, callback) {
 	var opts,
 		_this = this;
@@ -95,7 +102,6 @@ Neodb.prototype.close = function (collectionName) {};
 */
 
 Neodb.prototype.clean = function (callback) {};
-
 
 
 module.exports = Neodb;
