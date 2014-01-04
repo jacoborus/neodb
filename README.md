@@ -35,15 +35,16 @@ db = new neodb './mydb'
 
 # Create/add a drawer
 db.open 'Books'
+Books = db.drawers.Books
 
 # Insert a card
-db.Books.insert
+Books.insert
 	title:'El Quijote'
 	author:'Cervantes'
 	year: 1605
 
 # Insert some documents
-db.Books.insert [
+Books.insert [
 	title:'The Lord of the Rings'
 	author:'JRR Tolkien'
 	year: 1954
@@ -56,7 +57,7 @@ db.Books.insert [
 # find a single document
 quijote = {}
 
-db.Books.findOne {title: 'El Quijote'}, (err, card) ->
+Books.findOne {title: 'El Quijote'}, (err, card) ->
 	# do something with card
 	quijote = card
 
@@ -68,7 +69,7 @@ quijote._update (err, doc) ->
 	# do something async
 
 # find documents with mongodb query style
-db.Books.find {year: {$gt: 1900}}, (err, docs) ->
+Books.find {year: {$gt: 1900}}, (err, docs) ->
 	# docs is an array with Lord of rings and Javascript....
 	console.log docs
 ```
@@ -85,16 +86,17 @@ var db = new neodb('./mydb');
 
 // Create/add a collection
 db.open('Books');
+Books = db.drawers.Books
 
 // Insert a document (this returns the document itself)
-db.Books.insert({
+Books.insert({
 	title:'El Quijote',
 	author:'Cervantes',
 	year: 1605
 });
 
 // Insert some documents (this returns an array of inserted documents)
-db.Books.insert([
+Books.insert([
 	{
 		title:'The Lord of the Rings'
 		author:'JRR Tolkien'
@@ -109,7 +111,7 @@ db.Books.insert([
 
 // find a single document
 var quijote = {};
-db.Book.findOne({title: 'El Quijote'}, function(err, doc){
+Books.findOne({title: 'El Quijote'}, function(err, doc){
 	quijote = doc;
 });
 
@@ -122,7 +124,7 @@ quijote._update( function (err, doc) {
 }
 
 // find documents with mongodb query style
-db.Books.find({year: {$gt: 1900}}, function (err, docs) {
+Books.find({year: {$gt: 1900}}, function (err, docs) {
 	// docs is an array with Lord of rings and Javascript....
 	console.log docs
 })
