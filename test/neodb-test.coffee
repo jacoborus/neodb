@@ -13,30 +13,26 @@ deleteFolderRecursive = (path) ->
 				fs.unlinkSync curPath
 		fs.rmdirSync path
 
-describe 'Database constructor', ->
+describe 'Nedb constructor', ->
 
 	it 'return an object', ->
 		db = new neodb()
 		expect( db ).to.be.a 'object'
-	it 'return an object with private property dbPath false by default', ->
+	it 'return an object with private property path false by default', ->
 		db = new neodb()
 		expect( db.getPath() ).to.equal false
 	it 'return an object with property dbPath = "./something"', ->
 		db = new neodb './something'
 		expect( db.getPath() ).to.equal './something'
-		deleteFolderRecursive './something'
+		#deleteFolderRecursive './something'
 
 
-describe 'Database#addCollection', ->
+describe 'nedb#open', ->
 
 	it 'insert a collection in database', ->
 		db = new neodb()
-		db.addCollection 'Book'
-		expect( db['Book'].getDb() ).to.equal db
+		db.open 'Book', ->
+			expect( db.drawers ).to.have.property 'Book'
 
-	it 'overwrites options.inMemoryOnly if database is not persistant', ->
-		db = new neodb.Database()
-		db.addCollection 'Books', {inMemoryOnly: false}
-		expect( db.Books.getInMemoryOnly() ).to.equal true
 
 describe 'Database#dropCollection', ->

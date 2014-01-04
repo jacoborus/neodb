@@ -83,9 +83,9 @@ Neodb.prototype.open = function (name, options, callback) {
 			});
 		} else {
 			// just create a drawer and add it to the cabinet if in memory only drawer 
-			drawers[name] = new Drawer( name, opts );
+			this.drawers[name] = new Drawer( name, opts );
 			if (callback) {
-				return callback( null, drawers[name] );
+				return callback( null, this.drawers[name] );
 			}
 		}
 	} else if (callback) {
