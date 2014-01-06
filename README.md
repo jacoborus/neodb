@@ -159,6 +159,36 @@ The permitted fields are
 ### Validation
 ### Middleware
 
+Middleware is the set of functions that run before and after input operations. NeoDB have two middleware threads:
+
+**save**: occurs when insert or update a document.
+**remove**: occurs when removes cards
+
+Save middleware executes the next processes in order:
+
+- Init
+- Validaton
+- Presave
+- Save
+- Postsave
+
+Remove middlewate executes the next processes in order
+
+- Preremove
+- remove
+- postremove
+
+Init, presave, preremove, postsave and postremove are iteration like functions that requires 2 arguments, first is for document target and second is a callback funcion to pass next step. You can set this functions with `middleware.set` method throught `middleware drawer` property:
+
+```
+drawer.middleware( 'presave', function (card, next) {
+	// do something with card
+	//..
+	// pass to next process
+	next()
+});
+```
+
 
 
 
