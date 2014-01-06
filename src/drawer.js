@@ -6,7 +6,6 @@
 
 // get dependencies
 var Validator = require( './validator' ),
-	util = require( 'util' ),
 	Card = require( './card' ),
 	Middleware = require( './middleware' ),
 	Template = require( './template' );

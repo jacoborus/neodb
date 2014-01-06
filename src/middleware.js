@@ -1,6 +1,8 @@
 // private methods
 var msgErr, validate, save, Store, store, series, genId, layers;
 
+Store = require( './datastore' );
+
 layers = {
 	init : function (card, next) { next(); },
 	presave : function (card, next) { next(); },
@@ -8,9 +10,8 @@ layers = {
 	preremove : function (card, next) { next(); },
 	postremove : function (card, next) { next(); },
 }
-validate = function (card, next) { next(); };
 
-Store = require( './datastore' );
+validate = function (card, next) { next(); };
 
 msgErr = function ( msg ) {
 	this.msg = msg;

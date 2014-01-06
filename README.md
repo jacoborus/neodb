@@ -136,15 +136,15 @@ Books.find({year: {$gt: 1900}}, function (err, docs) {
 ### Cabinet
 ### Drawer
 ### Card
-### Schema
+### Template
 
-Schema defines the shape, validation, relationships and behaviour of each collection and its documents.
+Template defines the shape, validation, relationships and behaviour of each collection and its documents.
 
 Each key in your schema defines a property in every document of collections schema.
 
-#### Schema Types
+#### Field Types
 
-The permitted SchemaTypes are
+The permitted fields are
 - String
 - Number
 - Boolean
@@ -159,68 +159,55 @@ The permitted SchemaTypes are
 ### Validation
 ### Middleware
 
+
+
+
 ## API docs
 
-- NeoDB
-	- constructor(path)
-	- open(drawerName, options, callback)
-	- close(drawerName)
-	- clean(drawerName)
-	- Drawer class
 
+- Neodb
+	- open
+	- close
+	- clean
+	- getPath
 - Drawer
-	- constructor
-	- async methods
-		- insert
-		- search
-		- searchById
-		- searchOne
-		- update
-		- remove
-		- removeById
-		- clean
-	- sync methods
-		- set
-		- find
-		- findById
-		- findOne
-
-
-		- addTemplate
-
+	- Card
+	- insert
+	- update
+	- set
+	- remove
+	- removeById
+	- get
+	- find
+	- findOne
+	- clean
 - Card
-	- constructor
-	- _insert(callback)
-	- _remove(callback)
-	- _update(callback)
-
-- Template
-	- _update(newTemplate)
-	- _set(newTemplate)
-
-- Validator
-	- validate(object)
-	- update(template)
-
-- Query
-	- comparator
-	- operator
-
+	- _insert
+	- _remove
+	- _update
 - Middleware
-	- set(step, fn)
-
-- CabStore
-	- openDrawer(name, callback)
-	- removeDrawer(name, callback)
-	- cleanDrawer(name, callback)
-
-- DrawerStore
-	- insertCard
-	- insertCards
-	- updateCard
-	- updateCards
-	- removeCard
-	- removeCards
+	- set
+	- save
+	- remove
+- Query
+	- comparators
+	- operators
+- Validator
+- Template
+	- getter
+		- update
+	- setter
+- dbStore
+	- open
+	- remove
+	- clean
+- DataStore
+	- save
+	- remove
+- Series
+	- each
+	- loop
+- Virtuals
 
 
 ## Running Tests
