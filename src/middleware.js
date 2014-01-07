@@ -1,9 +1,10 @@
 // private methods
-var msgErr, validate, save, Store, store, series, genId, layers;
+var msgErr, validate, save, Store, store, loop, genId, layer;
 
 Store = require( './datastore' );
+series = require( './series' );
 
-layers = {
+layer = {
 	init : function (card, next) { next(); },
 	presave : function (card, next) { next(); },
 	postsave : function (card, next) { next(); },
@@ -18,56 +19,6 @@ msgErr = function ( msg ) {
 	this.name = "Error";
 }
 
-
-// Very custom async series function
-series = function (fns, data, callback) {
-
-	var iterate, len, cur,
-		data = data;
-
-	len = fns.length;
-	// pointer
-	cur = 0;
-	
-	iterate = function (err) {
-		if (err) {
-			return callback( err );
-		} else {
-			if (cur === len-1) {
-				callback( null, data );
-			} else {
-				cur++;
-				fns[cur]( data, iterate );
-			}
-		}
-	}
-	fns[cur]( data, iterate );
-}
-
-// Very custom async each series function
-eachSeries = function ( arr, fns, callback) {
-
-	var iterate, len, cur,
-		arr = arr;
-
-	len = arr.length;
-	// pointer
-	cur = 0;
-	
-	iterate = function (err) {
-		if (err) {
-			return callback( err );
-		} else {
-			if (cur === len-1) {
-				return callback( null, arr );
-			} else {
-				cur++;
-				series( fns, arr[cur], iterate );
-			}
-		}
-	}
-	series( fns, arr[cur], iterate );
-}
 
 genId = function() {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function( c ){
@@ -99,6 +50,7 @@ var Middleware = function (path, data) {
  */
 
 Middleware.prototype.set = function (name, fn) {
+
 	if (name === ('init' || 'presave' || 'postsave' || 'preremove' || 'postremove') && typeof fn === 'function') {
 		layer[name] = fn;
 	} else {
@@ -108,12 +60,13 @@ Middleware.prototype.set = function (name, fn) {
 
 
 Middleware.prototype.save = function (data, callback) {
+
 	var result = [];
+
 	if (typeof data !== 'number') {
-		var data = [data];
-	} else {
-		var data = data;
+		data = [data];
 	}
+
 	for (i in data) {
 		if (!data[i]._id) {
 			data[i]._id = genId();
@@ -121,24 +74,24 @@ Middleware.prototype.save = function (data, callback) {
 			result.push( data[i] );
 		}
 	}
-	eachSeries(
+
+	series.eachEach(
+		[layer.init, validate, layer.presave, store.save, layer.postsave],
 		result,
-		[layers.init, validate, layers.presave, store.save, layers.postsave],
 		callback
 	);
 };
 
 
+
 Middleware.prototype.remove = function (ids, callback) {
+
 	if (typeof ids !== 'number') {
-		data = [ids];
-	} else {
-		data = ids
+		ids = [ids];
 	}
-	eachSeries(
-		series,
+	series.eachEach(
+		[layer.preremove, store.remove, layer.postremove],
 		data,
-		[layers.preremove, store.remove, layers.postremove],
 		callback
 	);
 };

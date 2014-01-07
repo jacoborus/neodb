@@ -4,17 +4,26 @@ Template
 */
 
 // private methods
-/**
- * Create a new Template and set it as `drawer`.template
- * @param  {Object} templateModel model structure
-*/
-var update = function (newTemplate, callback) {
-	var prop, value;
-	for (prop in newTemplate) {
-		template[prop] = newTemplate[prop];
-	}
+var deep, update;
 
+deep = function (destination, source, callback) {
+	for (var property in source) {
+		if (typeof source[property] === "object" &&
+			source[property] !== null ) {
+			destination[property] = destination[property] || {};
+			this( destination[property], source[property] );
+		} else {
+			destination[property] = source[property];
+		}
+	}
+	return callback( destination );
 };
+
+
+update = function (newTemplate, callback) {
+	deep( template, newTemplate, callback )
+};
+
 
 // private properties
 var template = {};

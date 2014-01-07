@@ -6,7 +6,7 @@
 */
 
 
-var areComparable, areThingsEqual, compare, getDotValue, match, matchQueryPart, operators;
+var areComparable, areThingsEqual, comparator, getDotValue, match, matchQueryPart, operators;
 
 getDotValue = function(obj, field) {
 	var fieldParts, i, objs;
@@ -21,8 +21,8 @@ getDotValue = function(obj, field) {
 
 	if (util.isArray(obj[fieldParts[0]])) {
 		// If the next field is an integer, return only this item of the array
-		i = parseInt(fieldParts[1], 10);
-		if (typeof i === 'number' && !isNaN(i)) {
+		i = parseInt( fieldParts[1], 10 );
+		if (typeof i === 'number' && !isNaN( i )) {
 			return getDotValue(obj[fieldParts[0]][i], fieldParts.slice(2))
 		}
 
@@ -88,7 +88,7 @@ areComparable = function(a, b) {
 */
 
 
-compare = {
+comparator = {
 	$lt: function(a, b) {
 		return areComparable(a, b) && a < b;
 	},
@@ -254,10 +254,10 @@ matchQueryPart = function(obj, queryKey, queryValue, treatObjAsValue) {
 		if (dollarFirstChars.length > 0) {
 			keyLen2 = keys.length;
 			for (i = _k = 0; 0 <= keyLen2 ? _k <= keyLen2 : _k >= keyLen2; i = 0 <= keyLen2 ? ++_k : --_k) {
-				if (!comparisonFunctions[keys[i]]) {
+				if (!comparator[keys[i]]) {
 					throw "Unknown comparison function " + keys[i];
 				}
-				if (!comparisonFunctions[keys[i]](objValue, queryValue[keys[i]])) {
+				if (!comparator[keys[i]](objValue, queryValue[keys[i]])) {
 					return false;
 				}
 			}
@@ -265,10 +265,13 @@ matchQueryPart = function(obj, queryKey, queryValue, treatObjAsValue) {
 		}
 	}
 	if (util.isRegExp(queryValue)) {
-		return comparisonFunctions.$regex(objValue, queryValue);
+		return comparator.$regex(objValue, queryValue);
 	}
 	if (!areThingsEqual(objValue, queryValue)) {
 		return false;
 	}
 	return true;
 };
+
+
+module.exports = comparator;

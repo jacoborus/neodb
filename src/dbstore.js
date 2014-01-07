@@ -1,19 +1,7 @@
 
 //private methods
 var fs = require('fs'),
-	async = require('async'),
-	deleteFolderRecursive;
-
-deleteFolderRecursive = function( path ){
-	if (fs.existsSync( path )) {
-		fs.readdirSync( path ).forEach( function( file, index ){
-			var curPath = path + "/" + file;
-			fs.statSync( curPath ).isDirectory() ? deleteFolderRecursive( curPath ) : fs.unlinkSync( curPath );
-		});
-		fs.rmdirSync( path );
-	}
-};
-
+	series = require('./series');
 
 // private properties
 var path = false;
@@ -56,48 +44,26 @@ store.prototype.open = function( name, memOnly, callback ){
 			var filePath = dPath + "/" + fileName;
 			fs.readFile( filePath, function (err, data) {
 				if (err) {
-					throw err;
+					next(err);
+				} else {
+					drawer[fileName] = JSON.parse(data);
+					return next();
 				}
-				drawer[fileName] = JSON.parse(data);
-				return next();
 			});
 		};
-		async.each( fs.readdirSync(dPath), addFile, function( err ){
+
+		series.each( addFile, fs.readdirSync(dPath), function( err ){
 			if (callback) {
 				return callback( null, drawer );
 			}
 		});
+
 	} else if (!memOnly) {
 		fs.mkdir( dPath, function (err) {
 			if (callback){
 				callback( err, drawer );
 			}
 		});
-	}
-};
-
-
-/**
- * Remove collection and carduments (folder and files)
- * @param  {String}   collectionName name of collection to remove
- * @param  {Function} callback       signature: err, numRemovedCards
-*/
-
-store.prototype.remove = function (name, callback) {
-	var total = 0,
-		dPath = path + '/' + name;
-	if (fs.existSync( dPath)) {
-		fs.readdirSync( dPath ).forEach( function (file, index) {
-			var fPath = dPath + "/" + file;
-			fs.unlinkSync( fPath );
-			total++;
-		});
-		fs.rmdirSync( dPath );
-		if (callback) {
-			callback( null, total );
-		}
-	} else if (callback) {
-		callback( 'Drawer not found' );
 	}
 };
 

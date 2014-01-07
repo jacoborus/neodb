@@ -8,7 +8,8 @@
 var Validator = require( './validator' ),
 	Card = require( './card' ),
 	Middleware = require( './middleware' ),
-	Template = require( './template' );
+	Template = require( './template' ),
+	comparator = require( './query' );
 
 // private arguments
 var drawer = {},
@@ -32,6 +33,8 @@ msgErr = function ( msg ) {
 	this.name = "Error";
 }
 
+
+
 /**
 	 * Drawer constructor
 	 * @param  {String} name      name of drawer
@@ -42,25 +45,34 @@ msgErr = function ( msg ) {
 */
 
 var Drawer = function (path, opts) {
+
 	if (path && (typeof path === 'string')) {
+	
 		var id, initData,
 			opts = opts || {};
 
-		// assign private properties
+		// private properties
 		memOnly = opts.memOnly || false;
 		drawer = opts.initData || {};
 		middleware = new Middleware( path, drawer );
 
 		// public methods
 		this.Card = new Card( this );
+		this.middleware = middleware.set;
 
 	} else {
- 		throw new msgErr( "Drawer name not valid" );
+		throw new msgErr( "Drawer name not valid" );
 	}
 }
 
 
+
+/**
+ * Template Setter Getter
+ */
+
 Object.defineProperty( Drawer.prototype, "template", Template );
+
 
 
 /**
@@ -70,29 +82,27 @@ Object.defineProperty( Drawer.prototype, "template", Template );
 */
 
 Drawer.prototype.insert = function (data, callback) {
-	var result = [],
-		_this = this;
+
+	if (callback) {
+		var result = [],
+			_this = this;
+	}
 
 	middleware.save( data, function (err, cards) {
-		if (err) {
-			if (callback) {
-				callback( err );
-			}
-		} else {
-			for (card in cards) {
-				result.push( new _this.Card( card ));
-			}
-
-			if (callback) {
-				if (cards.length > 1) {
-					return callback( null, cards );
-				} else {
-					return callback( null, cards[0] );
-				}
+		if (callback) {
+			if (err) {
+				if (callback) callback( err );
+			} else {
+				// create cards with data
+				for (card in cards) { result.push( new _this.Card( card ));	};
+				// callback
+				callback( null, result );
 			}
 		}
 	});
 };
+
+
 
 /**
  * Find a card by identifier
@@ -101,40 +111,20 @@ Drawer.prototype.insert = function (data, callback) {
  * @return {Object}            resultcard
 */
 
-Drawer.prototype.get = function( id, callback ){
-	var card;
+Drawer.prototype.findById = Drawer.prototype.get = function( id, callback ){
+
 	if (typeof id === 'string') {
+
 		if (this[id]) {
-			card = new this.Card( this[id] );
-			if (callback) return callback( null, card );
-		} else if (callback) return callback( 'card not found' );
-	} else {
-		if (callback) return callback( 'not valid identifier' );
-	}
+
+			if (callback) callback( null, new this.Card( this[id] ));
+
+		} else if (callback) callback( 'Card not found' );
+
+	} else if (callback) callback( 'Not valid identifier' );
 };
 
 
-/**
- * Clean a card by identifier and sets its new data
- * @param {String}   id       id of object to update
- * @param {Object}   newDoc   new fields for card
- * @param {Function} callback signature: error, newCard
-*/
-
-Drawer.prototype.set = function (id, newCard, callback) {
-	var card, prop, value;
-	if (this[id]) {
-		delete newCard._id;
-		for (prop in newCard) {
-			value = newCard[prop];
-			if (typeof value !== 'function') {
-				this[id][prop] = value;
-			}
-		}
-		card = new this.Card( this[id] );
-		if (callback) return callback( null, card );
-	} else if (callback) return callback( 'card not found' );
-};
 
 /**
  * Find cards in drawer
@@ -142,10 +132,13 @@ Drawer.prototype.set = function (id, newCard, callback) {
  * @param  {Function} callback signature: err, doc/s
  * @return {Object||Array}            doc/docs
 */
+
 Drawer.prototype.find = function(query, callback) {
 	var dev, doc, id, key, ok, prop, queryOn, result, value, _ref;
 	query = query || false;
 	queryOn = false;
+
+	// check for empty query
 	for (prop in query) {
 		queryOn = true;
 		break;
@@ -171,7 +164,7 @@ Drawer.prototype.find = function(query, callback) {
 					if (typeof value === 'object') {
 						for (key in value) {
 							if (value.hasOwnProperty(key)) {
-								if (compare[key]( value[key], card[prop] )) {
+								if (comparator[key]( value[key], card[prop] )) {
 									ok = true;
 								}
 								break;
@@ -206,6 +199,8 @@ Drawer.prototype.find = function(query, callback) {
 	}
 };
 
+
+
 /**
  * Return the first card of a search
  * @param  {Object}   query    a nedb query formatted
@@ -213,19 +208,18 @@ Drawer.prototype.find = function(query, callback) {
  * @return {Object}            resultcard
 */
 
-
-Drawer.prototype.findOne = function( query, callback ){
+Drawer.prototype.findOne = function (query, callback) {
 	var _this = this;
-	this.dS.findOne(query, function(err, doc) {
+	this.dS.findOne( query, function (err, card) {
 		if (err) {
-			if (!callback) return {};
-			callback( err );
+			if (callback) calllback( err );
 		} else {
-			if (!callback) return doc;
-			callback(null, new Doc( doc ));
+			if (callback) callback( null, new _this.Card( card ));
 		}
 	});
 };
+
+
 
 /**
  * Update cards that match into query with update data
@@ -235,9 +229,12 @@ Drawer.prototype.findOne = function( query, callback ){
  * @param  {Function} callback signature: err, numReplaced
  * @return {Object||Array}            updated card
 */
-Drawer.prototype.update = function( query, update, callback ){
+
+Drawer.prototype.update = function (query, update, callback) {
 	this.find( query, function( err, docs ){} );
 };
+
+
 
 /**
  * Remove card from drawer
@@ -246,19 +243,25 @@ Drawer.prototype.update = function( query, update, callback ){
  * @return {Number}            numRemoved
 */
 
+Drawer.prototype.remove = function (query, callback) {
 
-Drawer.prototype.remove = function( query, callback ){
 	var _this = this;
-	this.find( query, function( err, docs ){
+
+	this.find( query, function (err, docs) {
+
 		var doc, i, len;
+
 		for (i = 0, len = docs.length; i < len; i++) {
 			doc = docs[i];
 			delete _this[doc.id];
 		}
+
 		if (!callback) return docs.length;
 		callback( null, docs.length );
 	});
 };
+
+
 
 /**
  * Remove card by id from drawer
@@ -266,20 +269,19 @@ Drawer.prototype.remove = function( query, callback ){
  * @param  {Function} callback signature: error, removedcardId
  * @return {String}            removed card id
 */
-Drawer.prototype.removeById = function(id, callback) {
+
+Drawer.prototype.removeById = function (id, callback) {
+
 	if (typeof id === 'string' && this[id]) {
+
 		delete this.id;
-		if (callback) {
-			callback(null, id);
-		}
-		return id;
-	} else {
-		if (callback) {
-			callback('card not found');
-		}
-		return 0;
-	}
+
+		if (callback) return callback( null, id );
+
+	} else if (callback) return callback( 'card not found' );
 };
+
+
 
 /**
  * Remove all cards of drawer
@@ -287,8 +289,8 @@ Drawer.prototype.removeById = function(id, callback) {
  * @return {Number}            numRemoved
 */
 
+Drawer.prototype.clean = function (callback) {};
 
-Drawer.prototype.clean = function(callback) {};
 
 
 module.exports = Drawer;

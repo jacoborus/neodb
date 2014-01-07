@@ -187,6 +187,8 @@ drawer.middleware( 'presave', function (card, next) {
 Card have `_isNew : true` property, when it is inserted in his drawer for first time
 
 
+### Virtuals
+
 
 ## API docs
 
@@ -207,7 +209,8 @@ Card have `_isNew : true` property, when it is inserted in his drawer for first 
 	- find
 	- findOne
 	- clean
-- Card
+	- middleware
+- Card **
 	- _insert
 	- _remove
 	- _update
