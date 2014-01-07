@@ -36,12 +36,12 @@ msgErr = function ( msg ) {
 
 
 /**
-	 * Drawer constructor
-	 * @param  {String} name      name of drawer
-	 * @param  {Object} options         Object with options
-	 * @param  {Boolean} options.inMemoryOnly if `true` drawer is not persistant
-	 * @param  {Object} options.schema      Schema for validation and relationships
-	 * @param  {Object} options.initData    data to initialize drawer
+ * Drawer constructor
+ * @param  {String} name      name of drawer
+ * @param  {Object} options         Object with options
+ * @param  {Boolean} options.inMemoryOnly if `true` drawer is not persistant
+ * @param  {Object} options.schema      Schema for validation and relationships
+ * @param  {Object} options.initData    data to initialize drawer
 */
 
 var Drawer = function (path, opts) {

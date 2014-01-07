@@ -24,58 +24,6 @@ npm install neodb
 
 ## Quick start
 
-**Coffeescript**
-
-```coffee
-# get dependency
-neodb = require 'neodb'
-
-# Create/add database passing db path as argument
-db = new neodb './mydb'
-
-# Create/add a drawer
-db.open 'Books'
-Books = db.drawers.Books
-
-# Insert a card
-Books.insert
-	title:'El Quijote'
-	author:'Cervantes'
-	year: 1605
-
-# Insert some documents
-Books.insert [
-	title:'The Lord of the Rings'
-	author:'JRR Tolkien'
-	year: 1954
-,
-	title:'JavaScript: The Good Parts'
-	author:'Douglas Crockford'
-	year: 2008
-]
-
-# find a single document
-quijote = {}
-
-Books.findOne {title: 'El Quijote'}, (err, card) ->
-	# do something with card
-	quijote = card
-
-# edit it
-quijote.year = 2024
-
-# update it
-quijote._update (err, doc) ->
-	# do something async
-
-# find documents with mongodb query style
-Books.find {year: {$gt: 1900}}, (err, docs) ->
-	# docs is an array with Lord of rings and Javascript....
-	console.log docs
-```
-
-
-**Javascript**
 
 ```js
 // get dependency
