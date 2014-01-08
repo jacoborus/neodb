@@ -104,7 +104,7 @@ Drawer.prototype.insert = function (data, callback) {
 	middleware.save( data, function (err, cards) {
 		if (callback) {
 			if (err) {
-				if (callback) callback( err );
+				callback( err );
 			} else {
 				// create cards with data
 				for (card in cards) { result.push( new _this.Card( card ));	};
@@ -146,7 +146,7 @@ Drawer.prototype.findById = Drawer.prototype.get = function( id, callback ){
 */
 
 Drawer.prototype.find = function (query, callback) {
-	if (!query or typeof query !== 'object') {
+	if (!query || typeof query !== 'object') {
 		callback( 'Bad query' );
 	} else if (callback) {
 

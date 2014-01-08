@@ -120,11 +120,11 @@ comparator = {
 	},
 	$exists: function( value, exists ){
 		exists =  (exists || exists === '') ? true : false;
-		value === undefined ? return !exists : return exists;
+		return value === undefined ? !exists : exists;
 	},
 	$regex: function( a, b ){
 		if ( !util.isRegExp(b) ){ throw "$regex operator called with non regular expression" };
-		typeof a !== 'string' ? return false : return b.test(a);
+		return typeof a !== 'string' ? false : b.test(a);
 	}
 };
 

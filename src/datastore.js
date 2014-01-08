@@ -28,25 +28,31 @@ var store = function (drawerPath, data) {
 
 store.prototype.save = function (card, cb) {
 
+	var id, field,
+		file = {};
 	// save id for use later
-	var id = card._id;
+	id = card._id;
 	// remove meta properties
-	delete card._id;
-	delete card._isNew;
+	for (field in card) {
+		if (card.hasOwnProperty( field )) {
+			file[field] = card[field];
+		}
+	}
+	
 	// with persistante mode
 	if (path) {
 		var fPath = path + '/' + id;
-		fs.writeFile( fPath, JSON.stringify( card ), function (err) {
+		fs.writeFile( fPath, JSON.stringify( file ), function (err) {
 			if (err) {
 				cb( err );
 			} else {
-				Cards[id] = card;
+				Cards[id] = file;
 				cb();
 			}
 		});
 	// memOnly mode
 	} else {
-		Cards[id] = card;
+		Cards[id] = file;
 		return cb();
 	}
 };

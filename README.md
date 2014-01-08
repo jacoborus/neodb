@@ -12,7 +12,7 @@ NeoDB saves database and drawers in folders, and its documents/cards in json fil
 
 - Only-in-memory, persistant or mixed databases
 - Only-in-memory or persistant collections
-- Object document modeling aka schemas
+- Object document modeling aka templates
 - MongoDB query style
 
 
@@ -97,17 +97,32 @@ var db = new neodb('./data'); // creates persistant cabinet
 
 ### Drawer
 
-Open drawers through neodb method open, drawer will be loaded if it exists in the cabinet.
+Open drawers through method `neodb.open`, drawer will be loaded if it exists in the cabinet.
 
 ```js
-db.open( 'books'); // books will be stored at 'db.drawers.books'
+db.open( 'books' ); // books will be stored at 'db.drawers.books'
 var videos;
 db.open( 'videos', function (err, drawer) {
-	videos = drawer;
+	videos = drawer; 
 });
 ```
 
-### Card
+Closing drawers don't remove any data, just unlinks it from the cabinet
+
+```js
+db.close( 'books', function (err) {
+	// do something after close drawer
+});
+```
+
+### Cards
+
+#### Creating cards
+
+#### Inserting cards
+
+#### Removing cards
+
 ### Template
 
 Template defines the shape, validation, relationships and behaviour of each collection and its documents.

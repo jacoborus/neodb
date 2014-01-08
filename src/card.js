@@ -1,5 +1,5 @@
 /*
-Model
+Card
 =====
 
 A *card* is .........
@@ -8,27 +8,35 @@ A *card* is .........
 module.exports = function (drawer) {
 
 	/**
-	 * Extends Model with card data
+	 * Extends Card with card data
 	 * @param  {Object} data  cards data
 	 * @return {Object}       card itself
 	*/
 
-	var Model = function (data) {
+	var Card = function (data, id) {
 		var x;
 		data = data || {};
 		for (x in data) {
 			this[x] = data[x];
 		}
+		if (id && typeof id === 'string') {
+			this._id = id;
+			this._isNew = false;
+		}
 	};
 
 
+	Card.prototype._id = false;
+	Card.prototype._isNew = true;
+
+							
 	/**
 	 * Inserts card itself in drawer
 	 * @param  {Function} callback signature: err, insertedDoc
 	 * @return {Object} inserted card
 	*/
 
-	Model.prototype._insert = function (callback) {
+	Card.prototype._insert = function (callback) {
 		drawer.insert( this, callback );
 	};
 
@@ -39,7 +47,7 @@ module.exports = function (drawer) {
 	 * @return {Object}            removedDoc
 	*/
 
-	Model.prototype._remove = function (callback) {
+	Card.prototype._remove = function (callback) {
 
 		if (this._id) {
 			drawer.remove({ id: this._id }, callback);
@@ -54,7 +62,7 @@ module.exports = function (drawer) {
 	 * @return {Object}            replaced card
 	*/
 
-	Model.prototype._update = function (callback) {
+	Card.prototype._update = function (callback) {
 		
 		if (this._id) {
 			var prop;
@@ -72,5 +80,5 @@ module.exports = function (drawer) {
 		} else if (callback) return callback( 'Cannot update, the card still is not in drawer' );
 	};
 
-	return Model;
+	return Card;
 };
