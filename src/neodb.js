@@ -59,15 +59,11 @@ Neodb.prototype.open = function (name, options, callback) {
 	if (name && (typeof name === 'string')) {
 
 		// if no options
-		if (typeof options === 'function') {
-			callback = options;
-		}
+		if (typeof options === 'function') { callback = options; }
 		opts = options || {};
 
 		// force in memory only drawer if cabinet is in memory only
-		if (path === false) {
-			opts.memOnly = true;
-		}
+		if (path === false) { opts.memOnly = true; }
 
 		// add drawer to cabinet
 		if (path && !opts.memOnly) {

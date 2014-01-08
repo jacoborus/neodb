@@ -8,10 +8,13 @@ var deep, update;
 
 deep = function (destination, source, callback) {
 	for (var property in source) {
-		if (typeof source[property] === "object" &&
-			source[property] !== null ) {
+		if (typeof source[property] === "object" &&	source[property] !== null ) {
+
 			destination[property] = destination[property] || {};
 			this( destination[property], source[property] );
+
+		} else if (source[property] === null) {
+			delete destination[property];
 		} else {
 			destination[property] = source[property];
 		}
@@ -21,7 +24,7 @@ deep = function (destination, source, callback) {
 
 
 update = function (newTemplate, callback) {
-	deep( template, newTemplate, callback )
+	deep( template, newTemplate, callback );
 };
 
 

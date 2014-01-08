@@ -82,13 +82,38 @@ Books.find({year: {$gt: 1900}}, function (err, docs) {
 ## Guide
 
 ### Cabinet
+
+To create a only in memory cabinet, create a new `neodb` without arguments:
+
+```js
+var neodb = require('neodb');
+var db = new neodb(); // creates only in memory cabinet
+```
+
+Pass path to database folder for persistant cabinets.
+```js
+var db = new neodb('./data'); // creates persistant cabinet
+```
+
 ### Drawer
+
+Open drawers through neodb method open, drawer will be loaded if it exists in the cabinet.
+
+```js
+db.open( 'books'); // books will be stored at 'db.drawers.books'
+var videos;
+db.open( 'videos', function (err, drawer) {
+	videos = drawer;
+});
+```
+
 ### Card
 ### Template
 
 Template defines the shape, validation, relationships and behaviour of each collection and its documents.
 
-Each key in your schema defines a property in every document of collections schema.
+Each key in your template defines a property in every card of drawer template.
+
 
 #### Field Types
 
@@ -98,8 +123,10 @@ The permitted fields are
 - Boolean
 - Date
 - Array
-- Object
 - ObjectId
+- undefined : free
+- null : delete destination property, only for updating templates
+- Object
 
 ### Relationships
 ### Population

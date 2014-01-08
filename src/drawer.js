@@ -33,6 +33,19 @@ msgErr = function ( msg ) {
 	this.name = "Error";
 }
 
+deep = function (destination, source, callback) {
+	for (var property in source) {
+		if (typeof source[property] === "object" &&
+			source[property] !== null ) {
+			destination[property] = destination[property] || {};
+			this( destination[property], source[property] );
+		} else {
+			destination[property] = source[property];
+		}
+	}
+	return callback( destination );
+};
+
 
 
 /**
@@ -108,7 +121,6 @@ Drawer.prototype.insert = function (data, callback) {
  * Find a card by identifier
  * @param  {String}   id       
  * @param  {Function} callback signature: error, resultcard
- * @return {Object}            resultcard
 */
 
 Drawer.prototype.findById = Drawer.prototype.get = function( id, callback ){
@@ -133,70 +145,99 @@ Drawer.prototype.findById = Drawer.prototype.get = function( id, callback ){
  * @return {Object||Array}            doc/docs
 */
 
-Drawer.prototype.find = function(query, callback) {
-	var dev, doc, id, key, ok, prop, queryOn, result, value, _ref;
-	query = query || false;
-	queryOn = false;
-
-	// check for empty query
-	for (prop in query) {
-		queryOn = true;
-		break;
-	}
-	// if not query return all cards
-	if ((query === false) || (queryOn === false)) {
-		if (callback) {
-			callback( null, drawer );
-		}
-	} else if (typeof query !== 'object') {
+Drawer.prototype.find = function (query, callback) {
+	if (!query or typeof query !== 'object') {
 		callback( 'Bad query' );
-	} else {
-		result = [];
-		for (id in drawer) {
-			card = drawer[id];
-			if (typeof card == 'function') {
-				continue;
-			}
-			ok = false;
-			for (prop in query) {
-				value = query[prop];
-				if (query.hasOwnProperty( prop )) {
-					if (typeof value === 'object') {
-						for (key in value) {
-							if (value.hasOwnProperty(key)) {
-								if (comparator[key]( value[key], card[prop] )) {
-									ok = true;
+	} else if (callback) {
+
+		//var dev, doc, id, key, ok, prop, queryOn, result, value, _ref;
+
+		var queryOn, prop, id, card, cards, _this, items, result;
+
+		_this = this;
+		queryOn = false;
+
+		// check for empty query
+		for (prop in query) {
+			queryOn = true;
+			break;
+		}
+
+		// if not query return all cards
+		if ((queryOn === false)) {
+			cards = {};
+			result = [];
+			// deep copy and create cards
+			deep( cards, drawer, function (items) {
+				for (id in items) {
+					items[id]._id = id;
+					items[id] = _this.Card( items[id] );
+					result.push( item );
+				}
+				callback( null, items );
+			});
+
+		// if query exists
+		} else {
+			/**
+			 * 
+			 *
+			 * Continue here   <-------------
+			 *
+			 *
+			 * 
+			 * 
+			 */
+			result = [];
+
+			for (id in drawer) {
+
+				card = drawer[id];
+				if (typeof card == 'function') {
+					continue;
+				}
+				ok = false;
+				for (prop in query) {
+					value = query[prop];
+					if (query.hasOwnProperty( prop )) {
+						if (typeof value === 'object') {
+							for (key in value) {
+								if (value.hasOwnProperty(key)) {
+									if (comparator[key]( value[key], card[prop] )) {
+										ok = true;
+									}
+									break;
 								}
+							}
+							if (ok === false) {
 								break;
 							}
-						}
-						if (ok === false) {
-							break;
-						}
-					} else {
-						if (typeof value === ('string' || 'number' || 'boolean')) {
-							if (value === card[prop]) {
-								ok = true;
+						} else {
+							if (typeof value === ('string' || 'number' || 'boolean')) {
+								if (value === card[prop]) {
+									ok = true;
+								}
 							}
 						}
 					}
 				}
-			}
-			if (ok === true) {
-				dev = {};
-				_ref = this[id];
-				for (prop in _ref) {
-					value = _ref[prop];
-					dev[prop] = this[id][prop];
+				if (ok === true) {
+					dev = {};
+					_ref = this[id];
+					for (prop in _ref) {
+						value = _ref[prop];
+						dev[prop] = this[id][prop];
+					}
+					dev._id = id;
+					result.push( new this.Card( dev ));
 				}
-				dev._id = id;
-				result.push( new this.Card( dev ));
 			}
-		}
-		if (callback) {
-			return callback( null, result );
+			if (callback) {
+				return callback( null, result );
+			}
 		}
 	}
+
 };
 
 
@@ -231,7 +272,16 @@ Drawer.prototype.findOne = function (query, callback) {
 */
 
 Drawer.prototype.update = function (query, update, callback) {
-	this.find( query, function( err, docs ){} );
+	var card;
+	this.find( query, function (err, cards) {
+		if (err) {
+			callback( err );
+		} else {
+			for (card in cards) {
+				deep(card, update); // <- very very bad 
+			}
+		}
+	});
 };
 
 
